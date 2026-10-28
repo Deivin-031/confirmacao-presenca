@@ -8,6 +8,120 @@ let deadline = null;
 let lastAttending = [];
 let saving = false;
 function expired() { return deadline !== null && Date.now() > deadline.getTime(); }
+
+function atualizarAvisoPrazo() {
+  const aviso = $('avisoPrazo');
+  if (!aviso || !deadline) return;
+
+  if (expired()) {
+    aviso.innerHTML = `
+      <h3>Prazo de confirmação encerrado</h3>
+
+      <p class="aviso-importante">
+        O período para confirmação de presença chegou ao fim.
+      </p>
+
+      <p>
+        Devido ao número limitado de convidados,
+        a entrada no evento será permitida exclusivamente
+        às pessoas que confirmaram sua presença dentro
+        do prazo e permanecem na lista.
+      </p>
+
+      <p>
+        Caso não tenha confirmado dentro do prazo,
+        você poderá entrar em contato com os noivos
+        para consultar a possibilidade de inclusão
+        na lista de convidados.
+      </p>
+
+      <p class="aviso-importante">
+        <strong>
+          A inclusão estará sujeita à disponibilidade
+          de vagas e não poderá ser garantida.
+        </strong>
+      </p>
+
+      <p>Agradecemos sua compreensão e carinho!</p>
+
+      <p>
+        <small>
+          Quem já confirmou poderá cancelar sua
+          presença individualmente a qualquer momento.
+        </small>
+      </p>
+    `;
+    return;
+  }
+
+  const dataFormatada = new Intl.DateTimeFormat('pt-BR', {
+    timeZone: 'America/Sao_Paulo',
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(deadline);
+
+  aviso.innerHTML = `
+    <h3>Prazo para confirmação</h3>
+
+    <p id="dataLimite">Confirme até ${dataFormatada}</p>
+
+    <p class="aviso-importante">
+      <strong>ATENÇÃO!</strong>
+      A confirmação de presença é obrigatória
+      para acesso ao evento.
+    </p>
+
+    <p>
+      A entrada será permitida somente às pessoas
+      que tiverem seus nomes confirmados
+      na lista da portaria.
+    </p>
+
+    <p>
+      Devido ao número limitado de convidados,
+      <strong>
+        quem não confirmar sua presença dentro
+        do prazo não poderá entrar no evento.
+      </strong>
+    </p>
+  `;
+}
+
+function atualizarContador() {
+  const contador = $('contadorPresenca');
+  if (!contador) return;
+
+  if (!deadline || expired()) {
+    contador.hidden = true;
+    atualizarAvisoPrazo();
+    return;
+  }
+
+  contador.hidden = false;
+
+  const restante = Math.max(
+    0,
+    Math.ceil((deadline.getTime() - Date.now()) / 1000)
+  );
+
+  const valores = {
+    dias: Math.floor(restante / 86400),
+    horas: Math.floor((restante % 86400) / 3600),
+    minutos: Math.floor((restante % 3600) / 60),
+    segundos: restante % 60
+  };
+
+  for (const [id, valor] of Object.entries(valores)) {
+    const elemento = $(id);
+    if (elemento) {
+      elemento.textContent = String(valor).padStart(2, '0');
+    }
+  }
+}
+
 function updateControls() {
   const closed = expired();
   document.querySelectorAll('input[name="member"]').forEach(el => { el.disabled = closed && !lastAttending.includes(el.value); });
@@ -43,26 +157,8 @@ async function init() {
     lastAttending = [...(family.attending || [])];
     const settings = await getDoc(doc(db, 'settings', 'rsvp'));
     deadline = settings.exists() && settings.data().deadline ? settings.data().deadline.toDate() : null;
-    const dataLimite = document.getElementById('dataLimite');
-  if (deadline) {
-    const dataFormatada = new Intl.DateTimeFormat(
-    'pt-BR',
-    {
-      timeZone: 'America/Sao_Paulo',
-      day: '2-digit',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    }
-  ).format(deadline);
-
-  dataLimite.textContent =
-    `Confirme até ${dataFormatada}`;
-} else {
-  dataLimite.textContent =
-  'Prazo ainda não definido.';
-}
+    atualizarAvisoPrazo();
+    atualizarContador();
 
     $('familyName').textContent = family.name;
     const members = $('members');
@@ -76,8 +172,12 @@ async function init() {
     $('lastStatus').textContent = family.status === 'pending' ? 'Ainda não há resposta registrada.' : family.status === 'no' ? 'Resposta atual: ninguém irá.' : `Resposta atual: ${(family.attending || []).join(', ')}`;
     $('message').textContent = '';
     $('family').hidden = false;
-    updateControls();
-    setInterval(updateControls, 30000);
+updateControls();
+
+setInterval(() => {
+  atualizarContador();
+  updateControls();
+}, 1000);
     $('rsvpForm').addEventListener('submit', e => { e.preventDefault(); const names = selected(); if (!names.length) { message('Selecione ao menos uma pessoa ou use “Ninguém poderá comparecer”.'); return; } save('yes', names); });
     $('declineBtn').addEventListener('click', () => { if (confirm('Confirmar que ninguém desta família poderá comparecer?')) { document.querySelectorAll('input[name="member"]').forEach(el => el.checked = false); save('no', []); } });
   } catch (err) { message('Não foi possível abrir o convite. Confira a configuração do Firebase e tente novamente.'); console.error(err); }

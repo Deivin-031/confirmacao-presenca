@@ -1,52 +1,105 @@
 <!doctype html>
 <html lang="pt-BR">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1">
-        <meta name="theme-color" content="#f7f2ec">
-        <title>Confirmação de presença</title>
-        <link rel="stylesheet" href="styles.css">
-    </head><body><main class="shell narrow">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#f7f2ec">
+    <title>Confirmação de presença</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <main class="shell narrow">
         <header class="hero">
             <div class="eyebrow">NOSSO DIA ESPECIAL</div>
             <div class="heart">♥</div>
             <h1>Confirmação de presença</h1>
             <p>Será uma alegria celebrar com vocês!</p>
-        </header><section class="panel" id="app">
+        </header>
+        <section class="panel" id="app">
             <p id="message" role="status">Carregando convite...</p>
             <div id="family" hidden>
                 <h2 id="familyName"></h2>
                 <p id="deadlineNotice">Selecione as pessoas que estarão presentes:
 
                 </p>
-            <div class="aviso-prazo">
-                <h3>Prazo para confirmação</h3>
-                <p id="dataLimite">
-                  Consultando prazo...
-                </p>
-                <p class="aviso-importante">
-                  <strong>ATENÇÃO!</strong>
-                  A confirmação de presença é obrigatória para acesso ao evento.
-                </p>
 
-                <p>
-                 A entrada será permitida somente às pessoas que tiverem seus nomes confirmados na lista a portaria.
-                </p>
+                <!-- Contagem regressiva -->
+                <div id="contadorPresenca" class="contador-presenca" style="display: none;">
 
-                <p>
-                  Devido ao número limitado de convidados,
-                  <strong>quem não confirmar sua presença dentro do prazo não poderá entrar no evento.</strong>
-                </p>
-            </div>
+                    <h3>Tempo restante para confirmar presença</h3>
+
+                    <div class="contador-numeros">
+                        <div>
+                            <strong id="dias">00</strong>
+                            <span>Dias</span>
+                        </div>
+
+                        <div>
+                            <strong id="horas">00</strong>
+                            <span>Horas</span>
+                        </div>
+
+                        <div>
+                            <strong id="minutos">00</strong>
+                            <span>Minutos</span>
+                        </div>
+
+                        <div>
+                            <strong id="segundos">00</strong>
+                            <span>Segundos</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="contadorPresenca" class="contador-presenca" hidden>
+                    <h3>Tempo restante para confirmar presença</h3>
+                
+                    <!-- CRONÔMETRO -->
+                    <div class="contador-numeros">
+                        <div><strong id="dias">00</strong><span>Dias</span></div>
+                        <div><strong id="horas">00</strong><span>Horas</span></div>
+                        <div><strong id="minutos">00</strong><span>Minutos</span></div>
+                        <div><strong id="segundos">00</strong><span>Segundos</span></div>
+                    </div>
+                </div>
+
+                <!-- CRONÔMETRO -->
+                <div class="aviso-prazo" id="avisoPrazo">
+                    <h3>Prazo para confirmação</h3>
+                    <p id="dataLimite">
+                        Consultando prazo...
+                    </p>
+                    <p class="aviso-importante">
+                        <strong>ATENÇÃO!</strong>
+                        A confirmação de presença é obrigatória para acesso ao evento.
+                    </p>
+
+                    <p>
+                        A entrada será permitida somente às pessoas que tiverem seus nomes confirmados na lista a
+                        portaria.
+                    </p>
+
+                    <p>
+                        Devido ao número limitado de convidados,
+                        <strong>quem não confirmar sua presença dentro do prazo não poderá entrar no evento.</strong>
+                    </p>
+                </div>
 
                 <form id="rsvpForm">
                     <div id="members"></div>
                     <div class="actions">
                         <button type="submit" id="confirmBtn">Confirmar selecionados</button>
                         <button type="button" id="declineBtn" class="outline">Ninguém poderá comparecer</button>
-                    </div></form>
-                    <p id="lastStatus" class="muted"></p>
-                </div></section>
-                <footer>Confirmação de presença • <a href="admin.html">Área administrativa</a></footer>
-            </main><script type="module" src="guest.js"></script>
-        </body></html>
+                    </div>
+                </form>
+                <p id="lastStatus" class="muted"></p>
+            </div>
+        </section>
+        <footer>Confirmação de presença • <a href="admin.html">Área administrativa</a></footer>
+    </main>
+    <script type="module" src="guest.js"></script>
+</body>
+
+</html>

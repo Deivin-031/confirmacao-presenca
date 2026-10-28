@@ -264,3 +264,60 @@ a {
 .aviso-prazo p {
   line-height: 1.6;
 }
+
+/* Cronometro de confirmacao */
+
+.contador-presenca {
+  margin: 20px 0 25px;
+  padding: 22px;
+  background: #fff8f4;
+  border: 1px solid #d8b9a8;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.contador-presenca[hidden] {
+  display: none;
+}
+
+.contador-presenca h3 {
+  font-family: Georgia, serif;
+  color: #866f62;
+  font-size: 22px;
+  margin-bottom: 18px;
+}
+
+.contador-numeros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.contador-numeros div {
+  background: white;
+  border: 1px solid #e5d0c4;
+  border-radius: 10px;
+  padding: 12px 5px;
+}
+
+.contador-numeros strong {
+  display: block;
+  font-size: 26px;
+  color: #a33f3f;
+}
+
+.contador-numeros span {
+  display: block;
+  font-size: 12px;
+  color: #866f62;
+}
+
+@media (max-width: 420px) {
+  .contador-numeros {
+    gap: 5px;
+  }
+
+  .contador-numeros strong {
+    font-size: 20px;
+  }
+}
