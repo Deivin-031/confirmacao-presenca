@@ -4,16 +4,34 @@ import { doc, getDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com
 const $ = id => document.getElementById(id);
 const token = new URLSearchParams(location.search).get('convite');
 let family;
+let deadline = null;
+let lastAttending = [];
+let saving = false;
+function expired() { return deadline !== null && Date.now() > deadline.getTime(); }
+function updateControls() {
+  const closed = expired();
+  document.querySelectorAll('input[name="member"]').forEach(el => { el.disabled = closed && !lastAttending.includes(el.value); });
+  $('deadlineNotice').textContent = closed ? 'Prazo encerrado: você pode apenas desmarcar pessoas já confirmadas.' : 'Selecione as pessoas que estarão presentes:';
+  $('confirmBtn').textContent = closed ? 'Salvar cancelamentos' : 'Confirmar selecionados';
+  $('confirmBtn').disabled = saving || (closed && lastAttending.length === 0);
+  $('declineBtn').disabled = saving || (closed && lastAttending.length === 0);
+}
+
 function message(text) { $('message').textContent = text; }
 function selected() { return [...document.querySelectorAll('input[name="member"]:checked')].map(el => el.value); }
 async function save(status, attending) {
-  $('confirmBtn').disabled = $('declineBtn').disabled = true;
+  if (saving) return;
+  if (expired() && (attending.some(name => !lastAttending.includes(name)) || (family.status !== 'yes' && attending.length))) {
+    message('Prazo encerrado. Não é possível adicionar ou reativar confirmações.'); return;
+  }
+  saving = true; updateControls();
   try {
     await updateDoc(doc(db, 'families', token), { status, attending, updatedAt: serverTimestamp() });
-    message('Resposta salva com sucesso! Você pode voltar a este link para alterar sua resposta.');
+    family.status = status; family.attending = attending; lastAttending = [...attending];
+    message(expired() ? 'Cancelamento salvo. Após o prazo, não é possível confirmar novamente.' : 'Resposta salva com sucesso! Você pode voltar a este link para alterar sua resposta.');
     $('lastStatus').textContent = status === 'yes' ? `Confirmados: ${attending.join(', ')}` : 'Nenhum integrante confirmado.';
   } catch (err) { message('Não foi possível salvar. Verifique sua conexão e tente novamente.'); console.error(err); }
-  finally { $('confirmBtn').disabled = $('declineBtn').disabled = false; }
+  finally { saving = false; updateControls(); }
 }
 async function init() {
   if (!token || !/^[a-f0-9]{48}$/.test(token)) { message('Convite inválido. Peça seu link individual ao organizador.'); return; }
@@ -22,6 +40,9 @@ async function init() {
     const snap = await getDoc(doc(db, 'families', token));
     if (!snap.exists()) { message('Convite não encontrado.'); return; }
     family = snap.data();
+    lastAttending = [...(family.attending || [])];
+    const settings = await getDoc(doc(db, 'settings', 'rsvp'));
+    deadline = settings.exists() && settings.data().deadline ? settings.data().deadline.toDate() : null;
     $('familyName').textContent = family.name;
     const members = $('members');
     family.members.forEach(name => {
@@ -34,6 +55,8 @@ async function init() {
     $('lastStatus').textContent = family.status === 'pending' ? 'Ainda não há resposta registrada.' : family.status === 'no' ? 'Resposta atual: ninguém irá.' : `Resposta atual: ${(family.attending || []).join(', ')}`;
     $('message').textContent = '';
     $('family').hidden = false;
+    updateControls();
+    setInterval(updateControls, 30000);
     $('rsvpForm').addEventListener('submit', e => { e.preventDefault(); const names = selected(); if (!names.length) { message('Selecione ao menos uma pessoa ou use “Ninguém poderá comparecer”.'); return; } save('yes', names); });
     $('declineBtn').addEventListener('click', () => { if (confirm('Confirmar que ninguém desta família poderá comparecer?')) { document.querySelectorAll('input[name="member"]').forEach(el => el.checked = false); save('no', []); } });
   } catch (err) { message('Não foi possível abrir o convite. Confira a configuração do Firebase e tente novamente.'); console.error(err); }

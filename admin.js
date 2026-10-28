@@ -1,6 +1,6 @@
 import { auth, db } from './firebase.js';
 import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
-import { collection, doc, getDocs, setDoc, deleteDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+import { collection, doc, getDocs, getDoc, setDoc, deleteDoc, serverTimestamp, Timestamp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 const $ = id => document.getElementById(id);
 let families = [];
 function feedback(msg) { $('feedback').textContent = msg; }
@@ -37,6 +37,35 @@ function render() {
   }
 }
 async function load() { const snap = await getDocs(collection(db, 'families')); families = snap.docs.map(d => ({ id:d.id, ...d.data() })); families.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR')); render(); }
+async function loadDeadline() {
+  const snap = await getDoc(doc(db, 'settings', 'rsvp'));
+  if (!snap.exists() || !snap.data().deadline) { $('deadlineInfo').textContent = 'Nenhum prazo configurado. Defina um antes de enviar os convites.'; return; }
+  const date = snap.data().deadline.toDate();
+  const br = new Intl.DateTimeFormat('sv-SE', {timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(date).replace(' ','T');
+  $('deadline').value = br;
+  $('deadlineInfo').textContent = 'Prazo atual: ' + date.toLocaleString('pt-BR',{timeZone:'America/Sao_Paulo'});
+}
+$('deadlineForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const value = $('deadline').value;
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(value)) return;
+  // datetime-local é interpretado explicitamente como horário de Brasília.
+  const [datePart,timePart] = value.split('T');
+  const [y,m,d] = datePart.split('-').map(Number);
+  const [h,min] = timePart.split(':').map(Number);
+  // Calcula o instante correspondente em America/Sao_Paulo, sem depender do fuso do navegador.
+  const utcGuess = Date.UTC(y,m-1,d,h,min);
+  const fmt = new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',timeZoneName:'shortOffset'});
+  const offsetLabel = fmt.formatToParts(new Date(utcGuess)).find(x=>x.type==='timeZoneName').value;
+  const match = offsetLabel.match(/GMT([+-])(\d{1,2})(?::(\d{2}))?/);
+  if (!match) { feedback('Não foi possível identificar o fuso de Brasília.'); return; }
+  const offset = (match[1]==='+'?1:-1)*(Number(match[2])*60+Number(match[3]||0));
+  const instant = new Date(utcGuess-offset*60000);
+  $('deadlineBtn').disabled = true;
+  try { await setDoc(doc(db,'settings','rsvp'),{deadline:Timestamp.fromDate(instant)}); await loadDeadline(); feedback('Prazo atualizado com sucesso.'); }
+  catch(err) { console.error(err); feedback('Erro ao salvar o prazo. Confira as regras do Firestore.'); }
+  finally { $('deadlineBtn').disabled = false; }
+});
 $('loginForm').addEventListener('submit', async e => { e.preventDefault(); try { await signInWithEmailAndPassword(auth, $('email').value.trim(), $('password').value); feedback(''); } catch (err) { feedback('Não foi possível entrar. Confira e-mail, senha e configuração do Firebase.'); console.error(err); } });
 $('logout').onclick = () => signOut(auth);
 $('export').onclick = exportCsv;
@@ -51,4 +80,4 @@ $('createForm').addEventListener('submit', async e => {
   catch (err) { feedback('Não foi possível cadastrar. Verifique se seu e-mail é administrador nas regras.'); console.error(err); }
   finally { $('createBtn').disabled = false; }
 });
-onAuthStateChanged(auth, async user => { $('loginSection').hidden = !!user; $('dashboard').hidden = !user; if (user) { try { await load(); feedback(''); } catch (err) { feedback('Acesso negado. Confira se este e-mail está autorizado nas regras do Firestore.'); console.error(err); } } else { families = []; $('familiesList').replaceChildren(); } });
+onAuthStateChanged(auth, async user => { $('loginSection').hidden = !!user; $('dashboard').hidden = !user; if (user) { try { await Promise.all([load(), loadDeadline()]); feedback(''); } catch (err) { feedback('Acesso negado. Confira se este e-mail está autorizado nas regras do Firestore.'); console.error(err); } } else { families = []; $('familiesList').replaceChildren(); } });

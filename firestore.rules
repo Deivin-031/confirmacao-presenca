@@ -4,15 +4,28 @@ service cloud.firestore {
     function isAdmin() {
       return request.auth != null
         && request.auth.token.firebase.sign_in_provider == 'password'
-        && request.auth.token.email == 'davymagalhaes244@gmail.com';
+        && request.auth.token.email in ['SEU_EMAIL_ADMIN_AQUI', 'SEGUNDO_EMAIL_ADMIN_AQUI'];
     }
     function isGuest() {
       return request.auth != null
         && request.auth.token.firebase.sign_in_provider == 'anonymous';
     }
+    function deadlineOpen() {
+      return exists(/databases/$(database)/documents/settings/rsvp)
+        && get(/databases/$(database)/documents/settings/rsvp).data.deadline is timestamp
+        && request.time <= get(/databases/$(database)/documents/settings/rsvp).data.deadline;
+    }
+    match /settings/{settingId} {
+      allow get: if isAdmin() || (isGuest() && settingId == 'rsvp');
+      allow list: if false;
+      allow create, update: if isAdmin() && settingId == 'rsvp'
+        && request.resource.data.keys().hasOnly(['deadline'])
+        && request.resource.data.keys().hasAll(['deadline'])
+        && request.resource.data.deadline is timestamp;
+      allow delete: if isAdmin() && settingId == 'rsvp';
+    }
     match /families/{familyId} {
       allow list: if isAdmin();
-      // O código secreto do convite é o ID do documento. Não compartilhe fora da família.
       allow get: if isAdmin() || (isGuest() && familyId.matches('[a-f0-9]{48}'));
       allow create, delete: if isAdmin();
       allow update: if isAdmin() || (
@@ -23,11 +36,20 @@ service cloud.firestore {
         && request.resource.data.attending is list
         && request.resource.data.attending.size() <= resource.data.members.size()
         && request.resource.data.attending.hasOnly(resource.data.members)
+        && request.resource.data.attending.size() == request.resource.data.attending.toSet().size()
         && (
           (request.resource.data.status == 'yes' && request.resource.data.attending.size() > 0)
           || (request.resource.data.status == 'no' && request.resource.data.attending.size() == 0)
         )
         && request.resource.data.updatedAt == request.time
+        && (
+          deadlineOpen()
+          || (
+            resource.data.status in ['yes', 'no']
+            && request.resource.data.attending.hasOnly(resource.data.attending)
+            && request.resource.data.attending.size() < resource.data.attending.size()
+          )
+        )
       );
     }
   }

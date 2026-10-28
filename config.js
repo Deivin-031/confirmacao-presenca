@@ -1,4 +1,3 @@
-
 export const firebaseConfig = {
   apiKey: "AIzaSyD2M0eEM3d7NHyRXSL08ZxDu4I5jDqGczY",
   authDomain: "lista-confirmacao-casamento.firebaseapp.com",
