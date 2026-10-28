@@ -1,331 +1,396 @@
+
 :root {
     font-family: system-ui, -apple-system, Segoe UI, sans-serif;
-    color: #423e3b;
-    background: #f7f2ec
+    color: #424247;
+    background: #F7F2EC;
 }
 
 * {
-    box-sizing: border-box
+    box-sizing: border-box;
 }
 
 body {
-    margin: 0
+    margin: 0;
 }
 
 .shell {
     max-width: 960px;
     margin: auto;
-    padding: 28px 16px 60px
+    padding: 28px 16px 60px;
 }
 
 .narrow {
-    max-width: 620px
+    max-width: 620px;
 }
 
 .hero {
     text-align: center;
-    padding: 38px 12px 24px
+    padding: 38px 12px 24px;
 }
 
 .hero.compact {
-    padding: 16px 0 20px
+    padding: 16px 0 20px;
 }
 
 .eyebrow {
     letter-spacing: .2em;
     font-size: 12px;
-    color: #987e6e
+    color: #793747;
 }
 
 .heart {
     font-size: 44px;
-    color: #b77c7d;
-    margin: 10px
+    color: #793747;
+    margin: 10px;
 }
 
 h1 {
     font-family: Georgia, serif;
     font-size: clamp(30px, 5vw, 44px);
     font-weight: normal;
-    margin: 12px 0
+    margin: 12px 0;
+    color: #793747;
 }
 
 h2 {
     font-family: Georgia, serif;
     font-weight: normal;
     font-size: 26px;
-    margin: 0 0 18px
+    margin: 0 0 18px;
+    color: #424247;
 }
 
 h3 {
-    margin: 0 0 8px
+    margin: 0 0 8px;
+    color: #793747;
 }
 
 .hero p,
 .muted,
 footer {
-    color: #817a74
+    color: #66636A;
 }
 
 .panel {
-    background: #fff;
-    border: 1px solid #e9dfd6;
+    background: #FFFCF9;
+    border: 1px solid #EAD8D8;
     border-radius: 16px;
     padding: 24px;
     margin-bottom: 18px;
-    box-shadow: 0 8px 24px #6e4f3810
+    box-shadow: 0 8px 24px rgba(66, 66, 71, 0.08);
 }
 
 label {
     display: block;
     margin: 12px 0;
-    font-size: 14px
+    font-size: 14px;
 }
 
 input:not([type=checkbox]),
 textarea {
     width: 100%;
     padding: 12px;
-    border: 1px solid #d8c9bc;
+    border: 1px solid #D8C3C8;
     border-radius: 8px;
     font: inherit;
-    margin-top: 7px
+    margin-top: 7px;
+    background: #FFFFFF;
+    color: #424247;
 }
 
+input:focus,
+textarea:focus {
+    outline: 2px solid #B98B97;
+    outline-offset: 1px;
+}
+
+/* BOTÕES MARSALA */
+
 button {
-    background: #866f62;
-    border: 1px solid #866f62;
-    color: white;
+    background: #793747;
+    border: 1px solid #793747;
+    color: #FFFFFF;
     padding: 12px 16px;
     border-radius: 8px;
     cursor: pointer;
-    font: inherit
+    font: inherit;
+    transition: background .2s ease, transform .2s ease;
+}
+
+button:hover:not(:disabled) {
+    background: #602938;
+    border-color: #602938;
 }
 
 button:disabled {
     opacity: .55;
-    cursor: wait
+    cursor: not-allowed;
 }
 
 button.outline {
     background: transparent;
-    color: #6b5548
+    color: #793747;
+    border-color: #793747;
+}
+
+button.outline:hover:not(:disabled) {
+    background: #F3E5E8;
+    border-color: #793747;
 }
 
 .danger {
-    border-color: #aa6060 !important;
-    color: #aa6060 !important
+    border-color: #A54D5D !important;
+    color: #A54D5D !important;
+    background: transparent;
 }
+
+.danger:hover:not(:disabled) {
+    background: #F8E9EC !important;
+}
+
+/* AÇÕES E BARRA ADMINISTRATIVA */
 
 .actions,
 .toolbar {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
-    margin-top: 18px
+    margin-top: 18px;
 }
 
 .toolbar {
     justify-content: flex-end;
-    margin-bottom: 18px
+    margin-bottom: 18px;
 }
+
+/* LISTA DE CONVIDADOS */
 
 .member {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 12px;
-    border: 1px solid #e7ddd5;
+    border: 1px solid #EAD8D8;
     border-radius: 9px;
     margin: 10px 0;
-    font-size: 16px
+    font-size: 16px;
+    background: #FFFCF9;
+    color: #424247;
 }
 
 .member input {
     width: 19px;
     height: 19px;
-    accent-color: #866f62
+    accent-color: #793747;
 }
+
+/* ESTATÍSTICAS DO ADMIN */
 
 .stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 12px;
-    margin-bottom: 18px
+    margin-bottom: 18px;
 }
 
 .stat {
-    background: white;
+    background: #FFFCF9;
     border-radius: 12px;
     padding: 16px;
-    border: 1px solid #e9dfd6
+    border: 1px solid #EAD8D8;
 }
 
 .stat strong {
     font-size: 27px;
-    display: block
+    display: block;
+    color: #793747;
 }
 
 .stat span {
     font-size: 13px;
-    color: #766f69
+    color: #66636A;
 }
+
+/* CARTÕES DAS FAMÍLIAS */
 
 .family-list {
     display: grid;
-    gap: 12px
+    gap: 12px;
 }
 
 .family-card {
     padding: 16px;
-    border: 1px solid #e9dfd6;
-    border-radius: 10px
+    border: 1px solid #EAD8D8;
+    border-radius: 10px;
+    background: #FFFCF9;
 }
 
 .family-card p {
-    line-height: 1.7
+    line-height: 1.7;
 }
+
+/* STATUS DAS CONFIRMAÇÕES */
 
 .status {
     display: inline-block;
     font-size: 12px;
     padding: 4px 10px;
     border-radius: 20px;
-    background: #eee;
-    color: #555
+    background: #F0E8E9;
+    color: #424247;
 }
 
 .status.yes {
-    background: #e4f2e7;
-    color: #2c6841
+    background: #E4F2E7;
+    color: #2C6841;
 }
 
 .status.no {
-    background: #f7e8e8;
-    color: #9b4545
+    background: #F7E8E8;
+    color: #9B4545;
 }
 
 .status.pending {
-    background: #f7efdc;
-    color: #826523
+    background: #F7EFDC;
+    color: #826523;
 }
+
+/* RODAPÉ E LINKS */
 
 footer {
     text-align: center;
     font-size: 12px;
-    margin-top: 30px
+    margin-top: 30px;
+    color: #66636A;
 }
 
 a {
-    color: #866f62
+    color: #793747;
 }
+
+a:hover {
+    color: #602938;
+}
+
+/* MENSAGENS */
 
 #feedback,
 #message,
 #newLink {
-    overflow-wrap: anywhere
+    overflow-wrap: anywhere;
 }
 
 #feedback:not(:empty) {
     padding: 12px;
-    background: #fff8ed;
-    border-radius: 8px
+    background: #F8EDF0;
+    border: 1px solid #EAD8D8;
+    border-radius: 8px;
 }
 
-/* Aviso de prazo e entrada no evento */
+/* AVISO DE PRAZO E ENTRADA NO EVENTO */
 
 .aviso-prazo {
-  margin: 24px 0;
-  padding: 22px;
-  background: #fff8f4;
-  border: 1px solid #d8b9a8;
-  border-radius: 12px;
-  text-align: center;
+    margin: 24px 0;
+    padding: 22px;
+    background: #F7F2EC;
+    border: 1px solid #EAD8D8;
+    border-radius: 12px;
+    text-align: center;
 }
 
 .aviso-prazo h3 {
-  font-family: Georgia, serif;
-  font-size: 23px;
-  color: #866f62;
+    font-family: Georgia, serif;
+    font-size: 23px;
+    color: #793747;
 }
 
 #dataLimite {
-  font-size: 19px;
-  font-weight: bold;
-  color: #9b4545;
-  margin: 15px 0;
+    font-size: 19px;
+    font-weight: bold;
+    color: #793747;
+    margin: 15px 0;
 }
 
 .aviso-importante {
-  color: #9b4545;
-  font-weight: 600;
+    color: #793747;
+    font-weight: 600;
 }
 
 .aviso-prazo p {
-  line-height: 1.6;
+    line-height: 1.6;
 }
 
-/* Cronometro de confirmacao */
+/* CRONÔMETRO DE CONFIRMAÇÃO */
 
 .contador-presenca {
-  margin: 20px 0 25px;
-  padding: 22px;
-  background: #fff8f4;
-  border: 1px solid #d8b9a8;
-  border-radius: 12px;
-  text-align: center;
+    margin: 20px 0 25px;
+    padding: 22px;
+    background: #F7F2EC;
+    border: 1px solid #EAD8D8;
+    border-radius: 12px;
+    text-align: center;
 }
 
 .contador-presenca[hidden] {
-  display: none;
-}
-
-.contador-presenca h3 {
-  font-family: Georgia, serif;
-  color: #866f62;
-  font-size: 22px;
-  margin-bottom: 18px;
-}
-
-.contador-numeros {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-}
-
-.contador-numeros div {
-  background: white;
-  border: 1px solid #e5d0c4;
-  border-radius: 10px;
-  padding: 12px 5px;
-}
-
-.contador-numeros strong {
-  display: block;
-  font-size: 26px;
-  color: #a33f3f;
-}
-
-.contador-numeros span {
-  display: block;
-  font-size: 12px;
-  color: #866f62;
-}
-
-@media (max-width: 420px) {
-  .contador-numeros {
-    gap: 5px;
-  }
-
-  .contador-numeros strong {
-    font-size: 20px;
-  }
-}
-
-.contador-presenca[hidden] {
-  display: none !important;
+    display: none !important;
 }
 
 .contador-presenca:not([hidden]) {
-  display: block;
+    display: block;
+}
+
+.contador-presenca h3 {
+    font-family: Georgia, serif;
+    color: #424247;
+    font-size: 22px;
+    margin-bottom: 18px;
+}
+
+.contador-numeros {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.contador-numeros div {
+    background: #FFFCF9;
+    border: 1px solid #EAD8D8;
+    border-radius: 10px;
+    padding: 12px 5px;
+}
+
+.contador-numeros strong {
+    display: block;
+    font-size: 26px;
+    color: #793747;
+}
+
+.contador-numeros span {
+    display: block;
+    font-size: 12px;
+    color: #424247;
+}
+
+/* AJUSTES PARA CELULAR */
+
+@media (max-width: 420px) {
+    .contador-numeros {
+        gap: 5px;
+    }
+
+    .contador-numeros strong {
+        font-size: 20px;
+    }
+
+    .contador-numeros span {
+        font-size: 11px;
+    }
+
+    .contador-presenca {
+        padding: 16px 10px;
+    }
+
+    .aviso-prazo {
+        padding: 16px;
+    }
 }
