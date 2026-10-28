@@ -1,0 +1,54 @@
+import { auth, db } from './firebase.js';
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+import { collection, doc, getDocs, setDoc, deleteDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+const $ = id => document.getElementById(id);
+let families = [];
+function feedback(msg) { $('feedback').textContent = msg; }
+function inviteLink(id) { return new URL(`index.html?convite=${id}`, location.href).href; }
+function token() { const bytes = new Uint8Array(24); crypto.getRandomValues(bytes); return [...bytes].map(b => b.toString(16).padStart(2, '0')).join(''); }
+function csvCell(v) { return '"' + String(v ?? '').replace(/^[=+\-@\t\r]/, "'$&").replaceAll('"', '""') + '"'; }
+function exportCsv() {
+  const rows = [['Família', 'Integrante', 'Resposta da família', 'Presença do integrante', 'Link']];
+  for (const f of families) for (const m of f.members) rows.push([f.name, m, f.status === 'yes' ? 'Confirmada' : f.status === 'no' ? 'Recusada' : 'Pendente', f.status === 'pending' ? 'Pendente' : f.attending.includes(m) ? 'Sim' : 'Não', inviteLink(f.id)]);
+  const blob = new Blob(['\uFEFF' + rows.map(row => row.map(csvCell).join(';')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'confirmacoes.csv'; a.click(); URL.revokeObjectURL(a.href);
+}
+function render() {
+  const confirmed = families.filter(f => f.status === 'yes');
+  const declined = families.filter(f => f.status === 'no');
+  const pending = families.filter(f => f.status === 'pending');
+  const people = families.flatMap(f => f.members);
+  const attending = confirmed.reduce((sum, f) => sum + f.attending.length, 0);
+  const stats = [['Famílias', families.length], ['Confirmadas', confirmed.length], ['Recusadas', declined.length], ['Pendentes', pending.length], ['Pessoas convidadas', people.length], ['Pessoas confirmadas', attending]];
+  $('stats').replaceChildren(...stats.map(([label, value]) => { const el = document.createElement('div'); el.className = 'stat'; const b = document.createElement('strong'); b.textContent = value; const s = document.createElement('span'); s.textContent = label; el.append(b,s); return el; }));
+  const query = $('search').value.toLocaleLowerCase('pt-BR').trim();
+  const list = $('familiesList'); list.replaceChildren();
+  const filtered = families.filter(f => [f.name, ...f.members].join(' ').toLocaleLowerCase('pt-BR').includes(query));
+  if (!filtered.length) { const p = document.createElement('p'); p.textContent = 'Nenhuma família encontrada.'; list.append(p); }
+  for (const f of filtered) {
+    const article = document.createElement('article'); article.className = 'family-card';
+    const heading = document.createElement('h3'); heading.textContent = f.name;
+    const status = document.createElement('span'); status.className = `status ${f.status}`; status.textContent = f.status === 'yes' ? 'Confirmada' : f.status === 'no' ? 'Recusada' : 'Pendente';
+    const names = document.createElement('p'); names.textContent = f.members.map(m => `${m}${f.status !== 'pending' ? (f.attending.includes(m) ? ' ✓' : ' —') : ''}`).join(' · ');
+    const actions = document.createElement('div'); actions.className = 'actions';
+    const copy = document.createElement('button'); copy.className = 'outline'; copy.textContent = 'Copiar convite'; copy.onclick = async () => { try { await navigator.clipboard.writeText(inviteLink(f.id)); feedback(`Link da ${f.name} copiado.`); } catch { prompt('Copie o link:', inviteLink(f.id)); } };
+    const del = document.createElement('button'); del.className = 'danger outline'; del.textContent = 'Excluir'; del.onclick = async () => { if (!confirm(`Excluir ${f.name}? O link deixará de funcionar.`)) return; try { await deleteDoc(doc(db, 'families', f.id)); feedback('Família excluída.'); await load(); } catch(e) { feedback('Erro ao excluir. Verifique as permissões.'); console.error(e); } };
+    actions.append(copy, del); article.append(heading, status, names, actions); list.append(article);
+  }
+}
+async function load() { const snap = await getDocs(collection(db, 'families')); families = snap.docs.map(d => ({ id:d.id, ...d.data() })); families.sort((a,b)=>a.name.localeCompare(b.name,'pt-BR')); render(); }
+$('loginForm').addEventListener('submit', async e => { e.preventDefault(); try { await signInWithEmailAndPassword(auth, $('email').value.trim(), $('password').value); feedback(''); } catch (err) { feedback('Não foi possível entrar. Confira e-mail, senha e configuração do Firebase.'); console.error(err); } });
+$('logout').onclick = () => signOut(auth);
+$('export').onclick = exportCsv;
+$('search').addEventListener('input', render);
+$('createForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const name = $('newName').value.trim();
+  const members = [...new Set($('newMembers').value.split(/\r?\n/).map(s => s.trim()).filter(Boolean))];
+  if (!name || !members.length || members.length > 50 || members.some(s => s.length > 100)) { feedback('Informe um nome e entre 1 e 50 integrantes (até 100 caracteres por nome).'); return; }
+  $('createBtn').disabled = true;
+  try { const id = token(); await setDoc(doc(db, 'families', id), { name, members, status:'pending', attending:[], createdAt:serverTimestamp(), updatedAt:serverTimestamp() }); $('createForm').reset(); const link = inviteLink(id); $('newLink').textContent = `Convite criado: ${link}`; await load(); feedback('Família cadastrada com sucesso.'); }
+  catch (err) { feedback('Não foi possível cadastrar. Verifique se seu e-mail é administrador nas regras.'); console.error(err); }
+  finally { $('createBtn').disabled = false; }
+});
+onAuthStateChanged(auth, async user => { $('loginSection').hidden = !!user; $('dashboard').hidden = !user; if (user) { try { await load(); feedback(''); } catch (err) { feedback('Acesso negado. Confira se este e-mail está autorizado nas regras do Firestore.'); console.error(err); } } else { families = []; $('familiesList').replaceChildren(); } });
