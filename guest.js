@@ -1,31 +1,76 @@
+
 import { auth, db } from './firebase.js';
-import { signInAnonymously } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
-import { doc, getDoc, updateDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+
+import {
+  signInAnonymously
+} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
+
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  serverTimestamp
+} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
+
 const $ = id => document.getElementById(id);
-const token = new URLSearchParams(location.search).get('convite');
+
+const token = new URLSearchParams(location.search)
+  .get('convite');
+
 let family;
 let deadline = null;
 let lastAttending = [];
 let saving = false;
-function expired() { return deadline !== null && Date.now() > deadline.getTime(); }
+let avisoEncerrado = false;
 
+// VERIFICA SE O PRAZO TERMINOU
+function expired() {
+  return deadline !== null &&
+    Date.now() >= deadline.getTime();
+}
+
+// ATUALIZA O AVISO DE PRAZO
 function atualizarAvisoPrazo() {
   const aviso = $('avisoPrazo');
-  if (!aviso || !deadline) return;
+
+  if (!aviso) return;
+
+  if (!deadline) {
+    aviso.innerHTML = `
+      <h3>Prazo para confirmação</h3>
+      <p>Prazo ainda não definido.</p>
+      <p class="aviso-importante">
+        <strong>ATENÇÃO!</strong>
+        A confirmação de presença é obrigatória
+        para acesso ao evento.
+      </p>
+      <p>
+        A entrada será permitida somente às pessoas
+        confirmadas na lista da portaria.
+      </p>
+    `;
+    return;
+  }
 
   if (expired()) {
+    if (avisoEncerrado) return;
+
+    avisoEncerrado = true;
+
     aviso.innerHTML = `
       <h3>Prazo de confirmação encerrado</h3>
 
       <p class="aviso-importante">
-        O período para confirmação de presença chegou ao fim.
+        O período para confirmação de presença
+        chegou ao fim.
       </p>
 
       <p>
         Devido ao número limitado de convidados,
-        a entrada no evento será permitida exclusivamente
-        às pessoas que confirmaram sua presença dentro
-        do prazo e permanecem na lista.
+        a entrada no evento será permitida
+        exclusivamente às pessoas que confirmaram
+        sua presença dentro do prazo estabelecido
+        e permanecem na lista.
       </p>
 
       <p>
@@ -42,7 +87,9 @@ function atualizarAvisoPrazo() {
         </strong>
       </p>
 
-      <p>Agradecemos sua compreensão e carinho!</p>
+      <p>
+        Agradecemos sua compreensão e carinho!
+      </p>
 
       <p>
         <small>
@@ -51,22 +98,30 @@ function atualizarAvisoPrazo() {
         </small>
       </p>
     `;
+
     return;
   }
 
-  const dataFormatada = new Intl.DateTimeFormat('pt-BR', {
-    timeZone: 'America/Sao_Paulo',
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  }).format(deadline);
+  avisoEncerrado = false;
+
+  const dataFormatada = new Intl.DateTimeFormat(
+    'pt-BR',
+    {
+      timeZone: 'America/Sao_Paulo',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }
+  ).format(deadline);
 
   aviso.innerHTML = `
     <h3>Prazo para confirmação</h3>
 
-    <p id="dataLimite">Confirme até ${dataFormatada}</p>
+    <p id="dataLimite">
+      Confirme até ${dataFormatada}
+    </p>
 
     <p class="aviso-importante">
       <strong>ATENÇÃO!</strong>
@@ -90,11 +145,20 @@ function atualizarAvisoPrazo() {
   `;
 }
 
+// ATUALIZA O CRONÔMETRO
 function atualizarContador() {
   const contador = $('contadorPresenca');
+
   if (!contador) return;
 
-  if (!deadline || expired()) {
+  if (!deadline) {
+    contador.hidden = true;
+    return;
+  }
+
+  const restante = deadline.getTime() - Date.now();
+
+  if (restante <= 0) {
     contador.hidden = true;
     atualizarAvisoPrazo();
     return;
@@ -102,84 +166,256 @@ function atualizarContador() {
 
   contador.hidden = false;
 
-  const restante = Math.max(
-    0,
-    Math.ceil((deadline.getTime() - Date.now()) / 1000)
-  );
+  const total = Math.ceil(restante / 1000);
 
-  const valores = {
-    dias: Math.floor(restante / 86400),
-    horas: Math.floor((restante % 86400) / 3600),
-    minutos: Math.floor((restante % 3600) / 60),
-    segundos: restante % 60
-  };
+  const dias = Math.floor(total / 86400);
+  const horas = Math.floor((total % 86400) / 3600);
+  const minutos = Math.floor((total % 3600) / 60);
+  const segundos = total % 60;
 
-  for (const [id, valor] of Object.entries(valores)) {
-    const elemento = $(id);
-    if (elemento) {
-      elemento.textContent = String(valor).padStart(2, '0');
-    }
-  }
+  $('dias').textContent =
+    String(dias).padStart(2, '0');
+
+  $('horas').textContent =
+    String(horas).padStart(2, '0');
+
+  $('minutos').textContent =
+    String(minutos).padStart(2, '0');
+
+  $('segundos').textContent =
+    String(segundos).padStart(2, '0');
 }
 
+// ATUALIZA OS BOTÕES
 function updateControls() {
   const closed = expired();
-  document.querySelectorAll('input[name="member"]').forEach(el => { el.disabled = closed && !lastAttending.includes(el.value); });
-  $('deadlineNotice').textContent = closed ? 'Prazo encerrado: você pode apenas desmarcar pessoas já confirmadas.' : 'Selecione as pessoas que estarão presentes:';
-  $('confirmBtn').textContent = closed ? 'Salvar cancelamentos' : 'Confirmar selecionados';
-  $('confirmBtn').disabled = saving || (closed && lastAttending.length === 0);
-  $('declineBtn').disabled = saving || (closed && lastAttending.length === 0);
+
+  document
+    .querySelectorAll('input[name="member"]')
+    .forEach(el => {
+      el.disabled =
+        closed && !lastAttending.includes(el.value);
+    });
+
+  $('deadlineNotice').textContent = closed
+    ? 'Prazo encerrado: você pode apenas desmarcar pessoas já confirmadas.'
+    : 'Selecione as pessoas que estarão presentes:';
+
+  $('confirmBtn').textContent = closed
+    ? 'Salvar cancelamentos'
+    : 'Confirmar selecionados';
+
+  $('confirmBtn').disabled =
+    saving || (closed && lastAttending.length === 0);
+
+  $('declineBtn').disabled =
+    saving || (closed && lastAttending.length === 0);
 }
 
-function message(text) { $('message').textContent = text; }
-function selected() { return [...document.querySelectorAll('input[name="member"]:checked')].map(el => el.value); }
+// MENSAGENS
+function message(text) {
+  $('message').textContent = text;
+}
+
+// CONVIDADOS SELECIONADOS
+function selected() {
+  return [
+    ...document.querySelectorAll(
+      'input[name="member"]:checked'
+    )
+  ].map(el => el.value);
+}
+
+// SALVA A CONFIRMAÇÃO
 async function save(status, attending) {
   if (saving) return;
-  if (expired() && (attending.some(name => !lastAttending.includes(name)) || (family.status !== 'yes' && attending.length))) {
-    message('Prazo encerrado. Não é possível adicionar ou reativar confirmações.'); return;
+
+  if (
+    expired() &&
+    (
+      attending.some(
+        name => !lastAttending.includes(name)
+      ) ||
+      (family.status !== 'yes' && attending.length)
+    )
+  ) {
+    message(
+      'Prazo encerrado. Não é possível adicionar ou reativar confirmações.'
+    );
+    return;
   }
-  saving = true; updateControls();
+
+  saving = true;
+  updateControls();
+
   try {
-    await updateDoc(doc(db, 'families', token), { status, attending, updatedAt: serverTimestamp() });
-    family.status = status; family.attending = attending; lastAttending = [...attending];
-    message(expired() ? 'Cancelamento salvo. Após o prazo, não é possível confirmar novamente.' : 'Resposta salva com sucesso! Você pode voltar a este link para alterar sua resposta.');
-    $('lastStatus').textContent = status === 'yes' ? `Confirmados: ${attending.join(', ')}` : 'Nenhum integrante confirmado.';
-  } catch (err) { message('Não foi possível salvar. Verifique sua conexão e tente novamente.'); console.error(err); }
-  finally { saving = false; updateControls(); }
+    await updateDoc(
+      doc(db, 'families', token),
+      {
+        status,
+        attending,
+        updatedAt: serverTimestamp()
+      }
+    );
+
+    family.status = status;
+    family.attending = attending;
+    lastAttending = [...attending];
+
+    message(
+      expired()
+        ? 'Cancelamento salvo. Após o prazo, não é possível confirmar novamente.'
+        : 'Resposta salva com sucesso! Você pode voltar a este link para alterar sua resposta.'
+    );
+
+    $('lastStatus').textContent =
+      status === 'yes'
+        ? `Confirmados: ${attending.join(', ')}`
+        : 'Nenhum integrante confirmado.';
+
+  } catch (err) {
+    message(
+      'Não foi possível salvar. Verifique sua conexão e tente novamente.'
+    );
+    console.error(err);
+
+  } finally {
+    saving = false;
+    updateControls();
+  }
 }
+
+// CARREGA O CONVITE
 async function init() {
-  if (!token || !/^[a-f0-9]{48}$/.test(token)) { message('Convite inválido. Peça seu link individual ao organizador.'); return; }
+  if (!token || !/^[a-f0-9]{48}$/.test(token)) {
+    message(
+      'Convite inválido. Peça seu link individual ao organizador.'
+    );
+    return;
+  }
+
   try {
     await signInAnonymously(auth);
-    const snap = await getDoc(doc(db, 'families', token));
-    if (!snap.exists()) { message('Convite não encontrado.'); return; }
+
+    const snap = await getDoc(
+      doc(db, 'families', token)
+    );
+
+    if (!snap.exists()) {
+      message('Convite não encontrado.');
+      return;
+    }
+
     family = snap.data();
-    lastAttending = [...(family.attending || [])];
-    const settings = await getDoc(doc(db, 'settings', 'rsvp'));
-    deadline = settings.exists() && settings.data().deadline ? settings.data().deadline.toDate() : null;
+
+    lastAttending = [
+      ...(family.attending || [])
+    ];
+
+    // BUSCA A DATA DEFINIDA NO ADMIN
+    const settings = await getDoc(
+      doc(db, 'settings', 'rsvp')
+    );
+
+    deadline =
+      settings.exists() && settings.data().deadline
+        ? settings.data().deadline.toDate()
+        : null;
+
+    // EXIBE AVISO E CRONÔMETRO
     atualizarAvisoPrazo();
     atualizarContador();
 
+    // NOME DA FAMÍLIA
     $('familyName').textContent = family.name;
+
+    // MONTA A LISTA DE CONVIDADOS
     const members = $('members');
+
     family.members.forEach(name => {
-      const label = document.createElement('label'); label.className = 'member';
-      const input = document.createElement('input'); input.type = 'checkbox'; input.name = 'member'; input.value = name;
-      input.checked = (family.attending || []).includes(name);
-      const span = document.createElement('span'); span.textContent = name;
-      label.append(input, span); members.append(label);
+      const label = document.createElement('label');
+      label.className = 'member';
+
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.name = 'member';
+      input.value = name;
+
+      input.checked =
+        (family.attending || []).includes(name);
+
+      const span = document.createElement('span');
+      span.textContent = name;
+
+      label.append(input, span);
+      members.append(label);
     });
-    $('lastStatus').textContent = family.status === 'pending' ? 'Ainda não há resposta registrada.' : family.status === 'no' ? 'Resposta atual: ninguém irá.' : `Resposta atual: ${(family.attending || []).join(', ')}`;
+
+    // STATUS ATUAL
+    $('lastStatus').textContent =
+      family.status === 'pending'
+        ? 'Ainda não há resposta registrada.'
+        : family.status === 'no'
+          ? 'Resposta atual: ninguém irá.'
+          : `Resposta atual: ${(family.attending || []).join(', ')}`;
+
     $('message').textContent = '';
     $('family').hidden = false;
-updateControls();
 
-setInterval(() => {
-  atualizarContador();
-  updateControls();
-}, 1000);
-    $('rsvpForm').addEventListener('submit', e => { e.preventDefault(); const names = selected(); if (!names.length) { message('Selecione ao menos uma pessoa ou use “Ninguém poderá comparecer”.'); return; } save('yes', names); });
-    $('declineBtn').addEventListener('click', () => { if (confirm('Confirmar que ninguém desta família poderá comparecer?')) { document.querySelectorAll('input[name="member"]').forEach(el => el.checked = false); save('no', []); } });
-  } catch (err) { message('Não foi possível abrir o convite. Confira a configuração do Firebase e tente novamente.'); console.error(err); }
+    updateControls();
+
+    // ATUALIZA A CADA SEGUNDO
+    setInterval(() => {
+      atualizarContador();
+      updateControls();
+    }, 1000);
+
+    // CONFIRMAR PRESENÇA
+    $('rsvpForm').addEventListener(
+      'submit',
+      e => {
+        e.preventDefault();
+
+        const names = selected();
+
+        if (!names.length) {
+          message(
+            'Selecione ao menos uma pessoa ou use “Ninguém poderá comparecer”.'
+          );
+          return;
+        }
+
+        save('yes', names);
+      }
+    );
+
+    // CANCELAR PRESENÇA
+    $('declineBtn').addEventListener(
+      'click',
+      () => {
+        if (
+          confirm(
+            'Confirmar que ninguém desta família poderá comparecer?'
+          )
+        ) {
+          document
+            .querySelectorAll('input[name="member"]')
+            .forEach(el => {
+              el.checked = false;
+            });
+
+          save('no', []);
+        }
+      }
+    );
+
+  } catch (err) {
+    message(
+      'Não foi possível abrir o convite. Confira a configuração do Firebase e tente novamente.'
+    );
+
+    console.error(err);
+  }
 }
+
 init();

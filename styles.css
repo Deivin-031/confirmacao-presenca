@@ -321,3 +321,11 @@ a {
     font-size: 20px;
   }
 }
+
+.contador-presenca[hidden] {
+  display: none !important;
+}
+
+.contador-presenca:not([hidden]) {
+  display: block;
+}
