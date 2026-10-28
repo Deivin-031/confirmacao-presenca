@@ -43,6 +43,27 @@ async function init() {
     lastAttending = [...(family.attending || [])];
     const settings = await getDoc(doc(db, 'settings', 'rsvp'));
     deadline = settings.exists() && settings.data().deadline ? settings.data().deadline.toDate() : null;
+    const dataLimite = document.getElementById('dataLimite');
+  if (deadline) {
+    const dataFormatada = new Intl.DateTimeFormat(
+    'pt-BR',
+    {
+      timeZone: 'America/Sao_Paulo',
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }
+  ).format(deadline);
+
+  dataLimite.textContent =
+    `Confirme até ${dataFormatada}`;
+} else {
+  dataLimite.textContent =
+  'Prazo ainda não definido.';
+}
+
     $('familyName').textContent = family.name;
     const members = $('members');
     family.members.forEach(name => {
