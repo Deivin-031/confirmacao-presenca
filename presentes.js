@@ -1,28 +1,97 @@
-// Catálogo demonstrativo: altere nomes, valores e descrições antes de publicar.
-const presentes = [
-  {id:'cafe', nome:'Cafeteira', valor:250, emoji:'☕', descricao:'Para começar nossos dias juntos'},
-  {id:'panelas', nome:'Jogo de panelas', valor:350, emoji:'🍳', descricao:'Para nossas receitas favoritas'},
-  {id:'jantar', nome:'Jogo de jantar', valor:220, emoji:'🍽️', descricao:'Para receber quem amamos'},
-  {id:'cama', nome:'Jogo de cama', valor:180, emoji:'🛏️', descricao:'Para noites aconchegantes'},
-  {id:'lua', nome:'Lua de mel', valor:500, emoji:'✈️', descricao:'Para criar novas memórias'},
-  {id:'casa', nome:'Nosso novo lar', valor:100, emoji:'🏡', descricao:'Uma contribuição especial'}
-];
+// Integração de TESTE: os preços são definidos exclusivamente no D1.
+const API = 'https://casamento-pagamentos.davy-dado.workers.dev';
 const carrinho = {};
-const moeda = n => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const params = new URLSearchParams(location.search), codigo = params.get('c');
-if (codigo && /^[A-Za-z0-9]{8}$/.test(codigo)) document.getElementById('voltar').href='index.html?c='+encodeURIComponent(codigo)+'#presentes';
-const catalogo=document.getElementById('catalogo');
-presentes.forEach(p=>{const card=document.createElement('article');card.className='presente';
-const imagem=document.createElement('div');imagem.className='ilustracao';imagem.textContent=p.emoji;
-const nome=document.createElement('h3');nome.textContent=p.nome;
-const desc=document.createElement('p');desc.textContent=p.descricao;
-const preco=document.createElement('strong');preco.textContent=moeda(p.valor);
-const botao=document.createElement('button');botao.textContent='Adicionar ao carrinho';botao.addEventListener('click',()=>{carrinho[p.id]=(carrinho[p.id]||0)+1;atualizar()});
-card.append(imagem,nome,desc,preco,botao);catalogo.append(card)});
-function atualizar(){const itens=document.getElementById('itens');itens.replaceChildren();let total=0,quantidade=0;
-for(const p of presentes){const q=carrinho[p.id]||0;if(!q)continue;total+=p.valor*q;quantidade+=q;
-const linha=document.createElement('div');linha.className='item';const info=document.createElement('span');info.textContent=p.nome+' × '+q;
-const botoes=document.createElement('div');const menos=document.createElement('button');menos.textContent='−';menos.setAttribute('aria-label','Remover um '+p.nome);menos.onclick=()=>{carrinho[p.id]--;atualizar()};const mais=document.createElement('button');mais.textContent='+';mais.setAttribute('aria-label','Adicionar um '+p.nome);mais.onclick=()=>{carrinho[p.id]++;atualizar()};botoes.append(menos,mais);linha.append(info,botoes);itens.append(linha)}
-if(!quantidade)itens.textContent='Nenhum presente selecionado ainda.';
-document.getElementById('quantidade').textContent=quantidade;document.getElementById('total').textContent=moeda(total)}
-atualizar();
+let presentes = [];
+const moeda = centavos => (centavos/100).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const params = new URLSearchParams(location.search);
+const codigo = params.get('c');
+if (codigo && /^[A-Za-z0-9]{8}$/.test(codigo)) {
+  document.getElementById('voltar').href = 'index.html?c='+encodeURIComponent(codigo)+'#presentes';
+}
+const catalogo = document.getElementById('catalogo');
+const pagar = document.getElementById('pagar');
+const aviso = document.getElementById('aviso-pagamento');
+const mensagemStatus = (texto, erro=false) => {
+  aviso.textContent = texto;
+  aviso.style.color = erro ? '#a11932' : '#665b60';
+};
+function atualizar() {
+  const itens = document.getElementById('itens');
+  itens.replaceChildren();
+  let total=0, quantidade=0;
+  for (const p of presentes) {
+    const q=carrinho[p.id]||0;
+    if (!q) continue;
+    total+=p.price_cents*q; quantidade+=q;
+    const linha=document.createElement('div'); linha.className='item';
+    const info=document.createElement('span'); info.textContent=p.name+' × '+q;
+    const botoes=document.createElement('div');
+    const menos=document.createElement('button'); menos.textContent='−';
+    menos.setAttribute('aria-label','Remover um '+p.name);
+    menos.onclick=()=>{carrinho[p.id]=Math.max(0,q-1);atualizar();};
+    const mais=document.createElement('button'); mais.textContent='+';
+    mais.setAttribute('aria-label','Adicionar um '+p.name);
+    mais.onclick=()=>{if(q<20){carrinho[p.id]=q+1;atualizar();}};
+    botoes.append(menos,mais); linha.append(info,botoes); itens.append(linha);
+  }
+  if (!quantidade) itens.textContent='Nenhum presente selecionado ainda.';
+  document.getElementById('quantidade').textContent=quantidade;
+  document.getElementById('total').textContent=moeda(total);
+  pagar.disabled=!quantidade;
+}
+function desenhar() {
+  catalogo.replaceChildren();
+  if(!presentes.length){catalogo.textContent='Nenhum presente disponível no momento.';return;}
+  for(const p of presentes) {
+    const card=document.createElement('article'); card.className='presente';
+    const imagem=document.createElement('div'); imagem.className='ilustracao';
+    if(p.image_url && /^https:\/\//i.test(p.image_url)) {
+      const img=document.createElement('img');img.src=p.image_url;img.alt=p.name;img.loading='lazy';
+      imagem.append(img);
+    } else imagem.textContent='🎁';
+    const nome=document.createElement('h3');nome.textContent=p.name;
+    const desc=document.createElement('p');desc.textContent=p.description||'Presente para os noivos';
+    const preco=document.createElement('strong');preco.textContent=moeda(p.price_cents);
+    const botao=document.createElement('button');botao.textContent='Adicionar ao carrinho';
+    botao.onclick=()=>{if((carrinho[p.id]||0)<20){carrinho[p.id]=(carrinho[p.id]||0)+1;atualizar();}};
+    card.append(imagem,nome,desc,preco,botao);catalogo.append(card);
+  }
+}
+async function carregar() {
+  catalogo.textContent='Carregando presentes...';
+  try {
+    const r=await fetch(API+'/api/gifts',{cache:'no-store'});
+    if(!r.ok) throw Error('Não foi possível consultar o catálogo');
+    const data=await r.json();
+    if(!Array.isArray(data.gifts))throw Error('Resposta inválida');
+    presentes=data.gifts.filter(p=>typeof p.id==='string'&&Number.isSafeInteger(p.price_cents)&&p.price_cents>0);
+    desenhar();atualizar();
+  } catch(e) {
+    catalogo.textContent='Não foi possível carregar os presentes. Atualize a página para tentar novamente.';
+    mensagemStatus('Erro de conexão com o catálogo.',true);
+  }
+}
+pagar.addEventListener('click',async()=>{
+  const nome=document.getElementById('nome').value.trim();
+  if(nome.length<2){mensagemStatus('Informe seu nome para continuar.',true);document.getElementById('nome').focus();return;}
+  const items=Object.entries(carrinho).filter(([,quantity])=>quantity>0).map(([id,quantity])=>({id,quantity}));
+  if(!items.length)return;
+  pagar.disabled=true;pagar.textContent='Preparando pagamento...';
+  mensagemStatus('Conectando ao Mercado Pago (ambiente de teste)...');
+  try {
+    const r=await fetch(API+'/api/checkout',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({buyer_name:nome,items})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.checkout_url||!/^https:\/\/[^/]*mercadopago\./i.test(data.checkout_url)) {
+      throw Error(data.error||'Não foi possível iniciar o checkout.');
+    }
+    location.assign(data.checkout_url);
+  } catch(e) {
+    mensagemStatus('Não foi possível iniciar o pagamento: '+e.message,true);
+    pagar.disabled=false;pagar.textContent='Ir para pagamento de teste';
+  }
+});
+carregar();
