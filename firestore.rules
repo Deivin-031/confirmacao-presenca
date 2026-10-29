@@ -1,53 +1,154 @@
+
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ADMINISTRADORES AUTORIZADOS
     function isAdmin() {
       return request.auth != null
         && request.auth.token.firebase.sign_in_provider == 'password'
-        && request.auth.token.email in ['SEU_EMAIL_ADMIN_AQUI', 'SEGUNDO_EMAIL_ADMIN_AQUI'];
+        && request.auth.token.email in [
+          'davymagalhaes244@gmail.com',
+          'elysiabatistele@gmail.com'
+        ];
     }
+
+    // CONVIDADOS AUTENTICADOS ANONIMAMENTE
     function isGuest() {
       return request.auth != null
         && request.auth.token.firebase.sign_in_provider == 'anonymous';
     }
+
+    // CÓDIGO DE CONVITE COM 8 CARACTERES
+    function validInviteCode(familyId) {
+      return familyId.matches('[A-Za-z0-9]{8}');
+    }
+
+    // VERIFICA SE O PRAZO ESTÁ ABERTO
     function deadlineOpen() {
-      return exists(/databases/$(database)/documents/settings/rsvp)
-        && get(/databases/$(database)/documents/settings/rsvp).data.deadline is timestamp
-        && request.time <= get(/databases/$(database)/documents/settings/rsvp).data.deadline;
+      return exists(
+        /databases/$(database)/documents/settings/rsvp
+      )
+        && get(
+          /databases/$(database)/documents/settings/rsvp
+        ).data.deadline is timestamp
+        && request.time <= get(
+          /databases/$(database)/documents/settings/rsvp
+        ).data.deadline;
     }
+
+    // CONFIGURAÇÕES DE CONFIRMAÇÃO
     match /settings/{settingId} {
-      allow get: if isAdmin() || (isGuest() && settingId == 'rsvp');
+
+      allow get: if isAdmin()
+        || (isGuest() && settingId == 'rsvp');
+
       allow list: if false;
-      allow create, update: if isAdmin() && settingId == 'rsvp'
-        && request.resource.data.keys().hasOnly(['deadline'])
-        && request.resource.data.keys().hasAll(['deadline'])
+
+      allow create, update: if isAdmin()
+        && settingId == 'rsvp'
+        && request.resource.data.keys().hasOnly([
+          'deadline'
+        ])
+        && request.resource.data.keys().hasAll([
+          'deadline'
+        ])
         && request.resource.data.deadline is timestamp;
-      allow delete: if isAdmin() && settingId == 'rsvp';
+
+      allow delete: if isAdmin()
+        && settingId == 'rsvp';
     }
+
+    // FAMÍLIAS CONVIDADAS
     match /families/{familyId} {
+
+      // ADMINISTRADORES PODEM LISTAR TODAS AS FAMÍLIAS
       allow list: if isAdmin();
-      allow get: if isAdmin() || (isGuest() && familyId.matches('[a-f0-9]{48}'));
+
+      // CONVIDADOS PODEM CONSULTAR SEU CONVITE
+      allow get: if isAdmin()
+        || (
+          isGuest()
+          && validInviteCode(familyId)
+        );
+
+      // SOMENTE ADMINISTRADORES CADASTRAM E EXCLUEM
       allow create, delete: if isAdmin();
+
+      // CONFIRMAÇÃO DE PRESENÇA
       allow update: if isAdmin() || (
+
         isGuest()
-        && familyId.matches('[a-f0-9]{48}')
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'attending', 'updatedAt'])
-        && request.resource.data.status in ['yes', 'no']
+
+        && validInviteCode(familyId)
+
+        // SOMENTE CAMPOS DE CONFIRMAÇÃO
+        && request.resource.data.diff(
+          resource.data
+        ).affectedKeys().hasOnly([
+          'status',
+          'attending',
+          'updatedAt'
+        ])
+
+        // RESPOSTA VÁLIDA
+        && request.resource.data.status in [
+          'yes',
+          'no'
+        ]
+
+        // LISTA DE CONVIDADOS
         && request.resource.data.attending is list
-        && request.resource.data.attending.size() <= resource.data.members.size()
-        && request.resource.data.attending.hasOnly(resource.data.members)
-        && request.resource.data.attending.size() == request.resource.data.attending.toSet().size()
-        && (
-          (request.resource.data.status == 'yes' && request.resource.data.attending.size() > 0)
-          || (request.resource.data.status == 'no' && request.resource.data.attending.size() == 0)
+
+        && request.resource.data.attending.size()
+          <= resource.data.members.size()
+
+        // SOMENTE INTEGRANTES DA FAMÍLIA
+        && request.resource.data.attending.hasOnly(
+          resource.data.members
         )
-        && request.resource.data.updatedAt == request.time
+
+        // IMPEDE NOMES REPETIDOS
+        && request.resource.data.attending.size()
+          == request.resource.data.attending.toSet().size()
+
+        // CONFIRMAÇÃO OU RECUSA
+        && (
+          (
+            request.resource.data.status == 'yes'
+            && request.resource.data.attending.size() > 0
+          )
+          ||
+          (
+            request.resource.data.status == 'no'
+            && request.resource.data.attending.size() == 0
+          )
+        )
+
+        // DATA DE ATUALIZAÇÃO
+        && request.resource.data.updatedAt
+          == request.time
+
+        // PRAZO DE CONFIRMAÇÃO
         && (
           deadlineOpen()
-          || (
-            resource.data.status in ['yes', 'no']
-            && request.resource.data.attending.hasOnly(resource.data.attending)
-            && request.resource.data.attending.size() < resource.data.attending.size()
+
+          ||
+
+          // APÓS O PRAZO, SOMENTE CANCELAMENTOS
+          (
+            resource.data.status in [
+              'yes',
+              'no'
+            ]
+
+            && request.resource.data.attending.hasOnly(
+              resource.data.attending
+            )
+
+            && request.resource.data.attending.size()
+              < resource.data.attending.size()
           )
         )
       );

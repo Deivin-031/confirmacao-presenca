@@ -95,7 +95,9 @@
               alt="Foto do casal"
               onerror="this.style.display='none'"
             >
-            <span class="placeholder-foto">Foto do casal 01</span>
+            <span class="placeholder-foto">
+              Foto do casal 01
+            </span>
           </div>
 
           <div class="foto-galeria">
@@ -104,24 +106,25 @@
               alt="Foto do casal"
               onerror="this.style.display='none'"
             >
-            <span class="placeholder-foto">Foto do casal 02</span>
+            <span class="placeholder-foto">
+              Foto do casal 02
+            </span>
           </div>
         </div>
       </div>
     </section>
 
     <!-- PÁGINA CERIMÔNIA -->
-    <section
-      class="pagina secao secao-local"
-      id="cerimonia"
-    >
+    <section class="pagina secao secao-local" id="cerimonia">
       <div class="foto-local">
         <img
           src="imagens/igreja.png"
           alt="Foto da igreja"
           onerror="this.style.display='none'"
         >
-        <span class="placeholder-foto">Foto da igreja</span>
+        <span class="placeholder-foto">
+          Foto da igreja
+        </span>
       </div>
 
       <div class="detalhes-local">
@@ -144,23 +147,25 @@
           <dd>16:00</dd>
 
           <dt>Endereço</dt>
-          <dd>Rua Artur Ferreira Pimenta, 36 – Bairro São Geraldo (Alvorada), Ibirité – MG</dd>
+          <dd>
+            Rua Artur Ferreira Pimenta, 36 –
+            Bairro São Geraldo (Alvorada), Ibirité – MG
+          </dd>
         </dl>
       </div>
     </section>
 
     <!-- PÁGINA FESTA -->
-    <section
-      class="pagina secao secao-local invertida"
-      id="festa"
-    >
+    <section class="pagina secao secao-local invertida" id="festa">
       <div class="foto-local">
         <img
           src="imagens/festa.jfif"
           alt="Foto do local da festa"
           onerror="this.style.display='none'"
         >
-        <span class="placeholder-foto">Foto do espaço da festa</span>
+        <span class="placeholder-foto">
+          Foto do espaço da festa
+        </span>
       </div>
 
       <div class="detalhes-local">
@@ -183,16 +188,16 @@
           <dd>Logo após o fim da cerimônia</dd>
 
           <dt>Endereço</dt>
-          <dd>Av. Otacílio Negrão de Lima, 410 - Aluoto, Ibirité</dd>
+          <dd>
+            Av. Otacílio Negrão de Lima, 410 -
+            Aluoto, Ibirité
+          </dd>
         </dl>
       </div>
     </section>
 
     <!-- PÁGINA PRESENÇA -->
-    <section
-      class="pagina"
-      id="presenca"
-    >
+    <section class="pagina" id="presenca">
       <div class="shell narrow area-presenca">
         <header class="hero compact">
           <div class="eyebrow">NOSSO DIA ESPECIAL</div>
@@ -357,13 +362,13 @@
         window.location.search
       );
 
-      const convite = parametros.get("convite");
+      const convite = parametros.get("c");
 
       const mensagem = document.getElementById(
         "mensagemAcesso"
       );
 
-      if (!convite || !/^[a-f0-9]{48}$/.test(convite)) {
+      if (!convite || !/^[A-Za-z0-9]{8}$/.test(convite)) {
         mensagem.textContent =
           "Acesso restrito. Solicite seu link individual ao organizador.";
         return;

@@ -15,7 +15,7 @@ import {
 const $ = id => document.getElementById(id);
 
 const token = new URLSearchParams(location.search)
-  .get('convite');
+  .get('c');
 
 let family;
 let deadline = null;
@@ -287,7 +287,7 @@ async function save(status, attending) {
 
 // CARREGA O CONVITE
 async function init() {
-  if (!token || !/^[a-f0-9]{48}$/.test(token)) {
+  if (!token || !/^[A-Za-z0-9]{8}$/.test(token)) {
     message(
       'Convite inválido. Peça seu link individual ao organizador.'
     );
@@ -331,6 +331,7 @@ async function init() {
 
     // MONTA A LISTA DE CONVIDADOS
     const members = $('members');
+    members.replaceChildren();
 
     family.members.forEach(name => {
       const label = document.createElement('label');
