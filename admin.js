@@ -686,3 +686,40 @@ $('giftForm').addEventListener('submit', async event => {
   } catch (e) { feedback('Erro ao salvar presente: ' + e.message); }
   finally { $('giftSave').disabled = false; }
 });
+
+
+// CONFERIR PAGAMENTO NO MERCADO PAGO (ADMINISTRADOR AUTENTICADO)
+$('reconcileForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  const paymentId = $('reconcilePaymentId').value.trim();
+  if (!/^\d{1,30}$/.test(paymentId)) {
+    $('reconcileResult').textContent = 'Informe somente os numeros do ID do pagamento.';
+    return;
+  }
+  const button = $('reconcileButton');
+  button.disabled = true;
+  button.textContent = 'Verificando...';
+  $('reconcileResult').textContent = 'Consultando o Mercado Pago...';
+  try {
+    const result = await adminRequest('/api/admin/reconcile-payment', 'POST', { payment_id: paymentId });
+    let message;
+    if (result.ok && result.order) {
+      const status = result.order.status === 'paid' ? 'Pago' : result.order.status;
+      message = `Pagamento ${paymentId} associado ao pedido de ${result.order.buyer_name}. Status: ${status}.`;
+    } else {
+      message = `O pagamento ${paymentId} nao foi associado a nenhum pedido. Confira os logs do Worker e a referencia externa no Mercado Pago.`;
+    }
+    $('reconcileResult').textContent = message;
+    $('paymentResultMessage').textContent = message;
+    if (typeof $('paymentResultDialog').showModal === 'function') $('paymentResultDialog').showModal();
+    if (result.ok) await refreshGiftAdmin();
+  } catch (error) {
+    const message = 'Nao foi possivel verificar o pagamento: ' + error.message;
+    $('reconcileResult').textContent = message;
+    $('paymentResultMessage').textContent = message;
+    if (typeof $('paymentResultDialog').showModal === 'function') $('paymentResultDialog').showModal();
+  } finally {
+    button.disabled = false;
+    button.textContent = 'Verificar pagamento';
+  }
+});

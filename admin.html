@@ -69,11 +69,25 @@
                     </form>
                 </section>
                 <section class="panel"><h2>Pedidos e pagamentos</h2><button type="button" id="refreshOrders" class="outline">Atualizar pedidos</button>
+                    <div class="reconcile-box">
+                        <h3>Verificar pagamento aprovado</h3>
+                        <p>Use o ID da operação do Mercado Pago para conferir e atualizar um pedido pendente. O sistema valida o pagamento antes de alterar o banco.</p>
+                        <form id="reconcileForm">
+                            <label>ID do pagamento <input id="reconcilePaymentId" type="text" inputmode="numeric" pattern="[0-9]{1,30}" maxlength="30" placeholder="Ex.: 185659375653" required></label>
+                            <button id="reconcileButton" type="submit">Verificar pagamento</button>
+                        </form>
+                        <p id="reconcileResult" role="status" aria-live="polite"></p>
+                    </div>
                     <div id="adminOrdersList" class="family-list"></div>
                 </section>
             </div>
         </div>
         <p id="feedback" role="status"></p>
+        <dialog id="paymentResultDialog" class="payment-result-dialog" aria-labelledby="paymentResultTitle">
+            <h2 id="paymentResultTitle">Resultado da verificação</h2>
+            <p id="paymentResultMessage"></p>
+            <form method="dialog"><button type="submit">OK</button></form>
+        </dialog>
     </main>
     <script type="module" src="admin.js"></script>
 </body>
