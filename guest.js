@@ -135,11 +135,9 @@ function atualizarAvisoPrazo() {
     </p>
 
     <p>
-      Devido ao número limitado de convidados,
       <strong>
-        quem não confirmar sua presença dentro
-        do prazo não poderá entrar no evento.
-      </strong>
+        Quem não confirmar sua presença dentro do prazo não poderá entrar no evento.</strong>
+        Devido ao número limitado de convidados.
     </p>
   `;
 }
