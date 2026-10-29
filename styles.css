@@ -394,3 +394,7 @@ a:hover {
         padding: 16px;
     }
 }
+
+.admin-tabs{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}.admin-tab{flex:1;min-width:170px;background:#f3e7e8;color:#793747;border:1px solid #d8b9c0}.admin-tab.selected{background:#793747;color:white}#giftForm label{display:block;margin:12px 0}#giftForm input[type=checkbox]{width:auto;margin-right:8px}#adminGiftsList .family-card,#adminOrdersList .family-card{margin:12px 0}
+
+[hidden]{display:none!important}

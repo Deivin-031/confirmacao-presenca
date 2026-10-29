@@ -584,3 +584,105 @@ onAuthStateChanged(
     }
   }
 );
+
+
+// GERENCIAMENTO DE PRESENTES E PEDIDOS NO CLOUDFLARE D1
+const ADMIN_API = 'https://casamento-pagamentos.davy-dado.workers.dev';
+let adminGifts = [];
+async function adminRequest(path, method = 'GET', body) {
+  const user = auth.currentUser;
+  if (!user) throw new Error('Entre no painel novamente.');
+  const token = await user.getIdToken();
+  const r = await fetch(ADMIN_API + path, {
+    method,
+    headers: { 'Authorization': 'Bearer ' + token, ...(body ? { 'Content-Type': 'application/json' } : {}) },
+    ...(body ? { body: JSON.stringify(body) } : {})
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || 'Falha ao acessar o Worker (' + r.status + ')');
+  return data;
+}
+function setAdminTab(gifts) {
+  $('guestsArea').hidden = gifts;
+  $('giftsArea').hidden = !gifts;
+  $('tabGuests').classList.toggle('selected', !gifts);
+  $('tabGifts').classList.toggle('selected', gifts);
+  if (gifts) refreshGiftAdmin();
+}
+$('tabGuests').onclick = () => setAdminTab(false);
+$('tabGifts').onclick = () => setAdminTab(true);
+const reais = cents => (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+function resetGiftForm() {
+  $('giftForm').reset();
+  $('giftId').value = '';
+  $('giftStock').value = '0';
+  $('giftActive').checked = true;
+  $('giftFormTitle').textContent = 'Adicionar presente';
+}
+$('giftCancel').onclick = resetGiftForm;
+async function refreshGiftAdmin() {
+  try {
+    const [g, o] = await Promise.all([
+      adminRequest('/api/admin/gifts'),
+      adminRequest('/api/admin/orders')
+    ]);
+    adminGifts = g.gifts || [];
+    const list = $('adminGiftsList');
+    list.replaceChildren();
+    for (const gift of adminGifts) {
+      const card = document.createElement('article');
+      card.className = 'family-card';
+      const title = document.createElement('h3');
+      title.textContent = gift.name + ' — ' + reais(gift.price_cents);
+      const details = document.createElement('p');
+      details.textContent = `${gift.category || 'Sem categoria'} · ${gift.active ? 'Disponível' : 'Oculto'} · Estoque: ${gift.stock === 0 ? 'Ilimitado' : gift.stock}`;
+      const edit = document.createElement('button');
+      edit.type = 'button'; edit.className = 'outline'; edit.textContent = 'Editar';
+      edit.onclick = () => {
+        $('giftId').value = gift.id;
+        $('giftName').value = gift.name;
+        $('giftDescription').value = gift.description || '';
+        $('giftPrice').value = (gift.price_cents / 100).toFixed(2);
+        $('giftCategory').value = gift.category || '';
+        $('giftImage').value = gift.image_url || '';
+        $('giftStock').value = gift.stock;
+        $('giftActive').checked = !!gift.active;
+        $('giftFormTitle').textContent = 'Editar presente';
+        $('giftForm').scrollIntoView({ behavior: 'smooth' });
+      };
+      card.append(title, details, edit); list.append(card);
+    }
+    if (!adminGifts.length) list.textContent = 'Nenhum presente cadastrado.';
+    const ordersList = $('adminOrdersList');
+    ordersList.replaceChildren();
+    for (const order of o.orders || []) {
+      const card = document.createElement('article'); card.className = 'family-card';
+      const title = document.createElement('h3'); title.textContent = `${order.buyer_name} — ${reais(order.total_cents)}`;
+      const details = document.createElement('p');
+      const statuses = { paid: 'Pago', pending: 'Pendente', rejected: 'Recusado', cancelled: 'Cancelado', refunded: 'Reembolsado', charged_back: 'Contestação' };
+      details.textContent = `${statuses[order.status] || order.status} · ${order.created_at || ''} · Pagamento: ${order.mp_payment_id || '—'}`;
+      card.append(title, details); ordersList.append(card);
+    }
+    if (!(o.orders || []).length) ordersList.textContent = 'Nenhum pedido registrado.';
+    feedback('Presentes e pedidos atualizados.');
+  } catch (e) { feedback('Não foi possível carregar presentes e pedidos: ' + e.message); console.error(e); }
+}
+$('refreshOrders').onclick = refreshGiftAdmin;
+$('giftForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  const cents = Math.round(Number($('giftPrice').value) * 100);
+  const body = {
+    name: $('giftName').value.trim(), description: $('giftDescription').value.trim(),
+    price_cents: cents, category: $('giftCategory').value.trim(),
+    image_url: $('giftImage').value.trim(), stock: Number($('giftStock').value),
+    active: $('giftActive').checked
+  };
+  if (!Number.isSafeInteger(cents) || cents < 1) return feedback('Valor inválido.');
+  $('giftSave').disabled = true;
+  try {
+    const id = $('giftId').value;
+    await adminRequest(id ? '/api/admin/gifts/' + encodeURIComponent(id) : '/api/admin/gifts', id ? 'PUT' : 'POST', body);
+    resetGiftForm(); await refreshGiftAdmin(); feedback('Presente salvo com sucesso.');
+  } catch (e) { feedback('Erro ao salvar presente: ' + e.message); }
+  finally { $('giftSave').disabled = false; }
+});

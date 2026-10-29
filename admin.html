@@ -24,7 +24,11 @@
         <div id="dashboard" hidden>
             <div class="toolbar"><button id="logout" class="outline">Sair</button><button id="export"
                     class="outline">Exportar CSV</button></div>
-            <section class="stats" id="stats"></section>
+            <nav class="admin-tabs" aria-label="Áreas do painel">
+                <button type="button" id="tabGuests" class="admin-tab selected">Confirmações</button>
+                <button type="button" id="tabGifts" class="admin-tab">Presentes e pagamentos</button>
+            </nav>
+            <div id="guestsArea"><section class="stats" id="stats"></section>
             <section class="panel">
                 <h2>Prazo final para confirmar</h2>
                 <p>Após esse horário, só será possível cancelar pessoas já confirmadas.</p>
@@ -46,6 +50,28 @@
                         placeholder="Nome da família ou integrante"></label>
                 <div id="familiesList" class="family-list"></div>
             </section>
+            </div>
+            <div id="giftsArea" hidden>
+                <section class="panel"><h2>Presentes cadastrados</h2><p>Valores e disponibilidade são controlados pelo banco D1.</p>
+                    <div id="adminGiftsList" class="family-list"></div>
+                    <h3 id="giftFormTitle">Adicionar presente</h3>
+                    <form id="giftForm">
+                        <input type="hidden" id="giftId">
+                        <label>Nome <input id="giftName" required maxlength="120"></label>
+                        <label>Descrição <textarea id="giftDescription" maxlength="1000"></textarea></label>
+                        <label>Valor em reais <input id="giftPrice" type="number" min="0.01" max="1000000" step="0.01" required></label>
+                        <label>Categoria <input id="giftCategory" maxlength="80"></label>
+                        <label>URL da imagem (HTTPS) <input id="giftImage" type="url" placeholder="https://..."></label>
+                        <label>Estoque (0 = ilimitado) <input id="giftStock" type="number" min="0" max="100000" value="0" required></label>
+                        <label><input id="giftActive" type="checkbox" checked> Presente disponível no site</label>
+                        <button id="giftSave">Salvar presente</button>
+                        <button type="button" class="outline" id="giftCancel">Limpar formulário</button>
+                    </form>
+                </section>
+                <section class="panel"><h2>Pedidos e pagamentos</h2><button type="button" id="refreshOrders" class="outline">Atualizar pedidos</button>
+                    <div id="adminOrdersList" class="family-list"></div>
+                </section>
+            </div>
         </div>
         <p id="feedback" role="status"></p>
     </main>
