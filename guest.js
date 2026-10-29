@@ -14,8 +14,7 @@ import {
 
 const $ = id => document.getElementById(id);
 
-const token = new URLSearchParams(location.search)
-  .get('c');
+const token = new URLSearchParams(location.search).get('c');
 
 let family;
 let deadline = null;
@@ -217,6 +216,75 @@ function message(text) {
   $('message').textContent = text;
 }
 
+// JANELA CENTRAL DE CONFIRMAÇÃO
+function mostrarConfirmacao(status, attending) {
+  let modal = document.getElementById('modalConfirmacao');
+
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modalConfirmacao';
+    modal.className = 'modal-confirmacao';
+
+    modal.innerHTML = `
+      <div
+        class="modal-confirmacao-caixa"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="tituloConfirmacao"
+        aria-describedby="textoConfirmacao"
+      >
+        <div class="modal-confirmacao-icone"
+             aria-hidden="true">✓</div>
+
+        <h2 id="tituloConfirmacao">
+          Alteração realizada!
+        </h2>
+
+        <p id="textoConfirmacao"></p>
+
+        <button type="button" id="fecharConfirmacao">
+          OK
+        </button>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  const texto = status === 'yes'
+    ? `Confirmados: ${attending.join(', ')}`
+    : 'Nenhum integrante confirmado.';
+
+  $('textoConfirmacao').textContent = texto;
+
+  modal.classList.add('visivel');
+
+  const botao = $('fecharConfirmacao');
+
+  function fechar() {
+    modal.classList.remove('visivel');
+    document.removeEventListener('keydown', aoPressionarTecla);
+    $('confirmBtn').focus();
+  }
+
+  function aoPressionarTecla(evento) {
+    if (evento.key === 'Escape') {
+      fechar();
+    }
+
+    if (evento.key === 'Tab') {
+      evento.preventDefault();
+      botao.focus();
+    }
+  }
+
+  botao.onclick = fechar;
+
+  document.addEventListener('keydown', aoPressionarTecla);
+
+  botao.focus();
+}
+
 // CONVIDADOS SELECIONADOS
 function selected() {
   return [
@@ -272,6 +340,9 @@ async function save(status, attending) {
       status === 'yes'
         ? `Confirmados: ${attending.join(', ')}`
         : 'Nenhum integrante confirmado.';
+
+    // EXIBE OS NOMES NO CENTRO DA TELA
+    mostrarConfirmacao(status, attending);
 
   } catch (err) {
     message(

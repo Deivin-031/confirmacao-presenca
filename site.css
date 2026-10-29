@@ -1,4 +1,7 @@
-/* Estilos exclusivos da nova página inicial. Preserva styles.css e o RSVP. */
+
+/* Estilos exclusivos da nova página inicial.
+   Preserva styles.css e o RSVP. */
+
 html {
     scroll-behavior: smooth;
 }
@@ -307,16 +310,18 @@ p {
     }
 }
 
-/* Navegação por abas: somente a página selecionada fica visível */
-main>.pagina {
+/* Navegação por abas:
+   somente a página selecionada fica visível */
+
+main > .pagina {
     display: none !important;
 }
 
-main>.pagina.ativa {
+main > .pagina.ativa {
     display: block !important;
 }
 
-main>.pagina.secao-local.ativa {
+main > .pagina.secao-local.ativa {
     display: grid !important;
 }
 
@@ -329,7 +334,7 @@ main>.pagina.secao-local.ativa {
 }
 
 @media (max-width: 700px) {
-    main>.pagina.secao-local.ativa {
+    main > .pagina.secao-local.ativa {
         display: grid !important;
         grid-template-columns: 1fr;
     }
@@ -339,21 +344,16 @@ main>.pagina.secao-local.ativa {
    ACESSO RESTRITO A CONVIDADOS
    ========================================= */
 
-/* Oculta o conteúdo enquanto o convite
-   não for validado pelo Firebase */
 body:not(.acesso-liberado) > .site-header,
 body:not(.acesso-liberado) > main,
 body:not(.acesso-liberado) > .rodape-site {
     display: none !important;
 }
 
-/* Oculta a tela de verificação após
-   a validação do convite */
 body.acesso-liberado > #telaAcesso {
     display: none !important;
 }
 
-/* Tela de acesso */
 .tela-acesso {
     min-height: 100vh;
     display: grid;
@@ -380,4 +380,104 @@ body.acesso-liberado > #telaAcesso {
 .acesso-cartao p {
     color: #424247;
     line-height: 1.8;
+}
+
+/* =========================================
+   JANELA CENTRAL DE CONFIRMAÇÃO
+   ========================================= */
+
+.modal-confirmacao {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background: rgba(0, 0, 0, 0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-confirmacao.visivel {
+    display: flex;
+}
+
+.modal-confirmacao-caixa {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 420px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 35px 25px;
+    border-radius: 20px;
+    background: #FFFCF9;
+    text-align: center;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.22);
+    animation: aparecerModal 0.25s ease;
+}
+
+.modal-confirmacao-icone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 65px;
+    height: 65px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    background: #EAD8D8;
+    color: #793747;
+    font-size: 35px;
+    font-weight: bold;
+}
+
+.modal-confirmacao-caixa h2 {
+    color: #602938;
+    font-family: Georgia, serif;
+    font-size: 26px;
+    margin: 0 0 12px;
+}
+
+.modal-confirmacao-caixa p {
+    color: #424247;
+    font-size: 16px;
+    line-height: 1.7;
+    margin: 0 0 25px;
+    overflow-wrap: anywhere;
+}
+
+#fecharConfirmacao {
+    background: #793747;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 10px;
+    padding: 13px 55px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+#fecharConfirmacao:hover {
+    background: #602938;
+}
+
+#fecharConfirmacao:focus-visible {
+    outline: 3px solid #C79BA6;
+    outline-offset: 3px;
+}
+
+@keyframes aparecerModal {
+    from {
+        opacity: 0;
+        transform: scale(0.92);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .modal-confirmacao-caixa {
+        animation: none;
+    }
 }
