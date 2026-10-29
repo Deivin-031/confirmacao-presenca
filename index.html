@@ -1,139 +1,118 @@
-
 <!doctype html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#f7f2ec">
-  <title>Confirmação de presença</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#F7F2EC">
+  <meta name="description" content="Informações sobre nosso casamento, cerimônia, festa e confirmação de presença.">
+  <title>Nosso Casamento</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="site.css">
 </head>
-
 <body>
-  <main class="shell narrow">
-
-    <header class="hero">
-      <div class="eyebrow">NOSSO DIA ESPECIAL</div>
-      <div class="heart">♥</div>
-      <h1>Confirmação de presença</h1>
-      <p>Será uma alegria celebrar com vocês!</p>
-    </header>
-
-    <section class="panel" id="app">
-
-      <p id="message" role="status">
-        Carregando convite...
-      </p>
-
-      <div id="family" hidden>
-
-        <h2 id="familyName"></h2>
-
-        <p id="deadlineNotice">
-          Selecione as pessoas que estarão presentes:
-        </p>
-
-        <!-- CRONÔMETRO -->
-        <div
-          id="contadorPresenca"
-          class="contador-presenca"
-          hidden
-        >
-          <h3>
-            Tempo restante para confirmar presença
-          </h3>
-
-          <div class="contador-numeros">
-
-            <div>
-              <strong id="dias">00</strong>
-              <span>Dias</span>
-            </div>
-
-            <div>
-              <strong id="horas">00</strong>
-              <span>Horas</span>
-            </div>
-
-            <div>
-              <strong id="minutos">00</strong>
-              <span>Minutos</span>
-            </div>
-
-            <div>
-              <strong id="segundos">00</strong>
-              <span>Segundos</span>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- AVISO DE PRAZO -->
-        <div class="aviso-prazo" id="avisoPrazo">
-
-          <h3>Prazo para confirmação</h3>
-
-          <p id="dataLimite">
-            Consultando prazo...
-          </p>
-
-          <p class="aviso-importante">
-            <strong>ATENÇÃO!</strong>
-            A confirmação de presença é obrigatória
-            para acesso ao evento.
-          </p>
-
-          <p>
-            A entrada será permitida somente às pessoas
-            que tiverem seus nomes confirmados
-            na lista da portaria.
-          </p>
-
-          <p>
-            Devido ao número limitado de convidados,
-            <strong>
-              quem não confirmar sua presença dentro
-              do prazo não poderá entrar no evento.
-            </strong>
-          </p>
-
-        </div>
-
-        <!-- FORMULÁRIO DE CONFIRMAÇÃO -->
-        <form id="rsvpForm">
-
-          <div id="members"></div>
-
-          <div class="actions">
-            <button type="submit" id="confirmBtn">
-              Confirmar selecionados
-            </button>
-
-            <button
-              type="button"
-              id="declineBtn"
-              class="outline"
-            >
-              Ninguém poderá comparecer
-            </button>
-          </div>
-
-        </form>
-
-        <p id="lastStatus" class="muted"></p>
-
+  <header class="site-header">
+    <a class="site-brand" href="#inicio">♥ Nosso Casamento</a>
+    <nav class="menu-casamento" aria-label="Navegação principal">
+      <a class="ativo" href="#inicio" data-tab="inicio">Início</a>
+      <a href="#cerimonia" data-tab="cerimonia">Cerimônia</a>
+      <a href="#festa" data-tab="festa">Festa</a>
+      <a href="#presenca" data-tab="presenca">Presença</a>
+    </nav>
+  </header>
+  <main>
+    <section class="pagina ativa" id="inicio">
+    <div class="abertura">
+      <div class="abertura-conteudo">
+        <span class="sobretitulo">O COMEÇO DO NOSSO PARA SEMPRE</span>
+        <h1>Nosso casamento</h1>
+        <p class="subtitulo">[Nome da noiva] <span aria-hidden="true">&</span> [Nome do noivo]</p>
+        <p>Existem momentos que se tornam ainda mais especiais quando compartilhados com quem amamos. Estamos preparando cada detalhe para celebrar nossa união e queremos você ao nosso lado nesse dia inesquecível.</p>
+        <p class="data-destaque">[Dia] de [mês] de [ano]</p>
+        <a class="botao-marsala" href="#presenca">Confirmar presença</a>
+      </div>
+      <div class="foto-principal"><img src="imagens/casal-principal.jpg" alt="Foto dos noivos" onerror="this.parentElement.classList.add('sem-foto'); this.style.display='none'"><span class="placeholder-foto">Adicione a foto principal dos noivos em<br><strong>imagens/casal-principal.jpg</strong></span></div>
+    </section>
+    <section class="secao historia" aria-labelledby="titulo-historia">
+      <span class="sobretitulo">NOSSA HISTÓRIA</span>
+      <h2 id="titulo-historia">Um amor para celebrar</h2>
+      <p>Entre encontros, sorrisos e sonhos compartilhados, construímos uma história que merece ser celebrada. Que alegria poder dividir esse novo capítulo com pessoas tão especiais!</p>
+      <div class="galeria">
+        <div class="foto-galeria"><img src="imagens/casal-01.jpg" alt="Primeira foto do casal" onerror="this.parentElement.classList.add('sem-foto');this.style.display='none'"><span class="placeholder-foto">Foto do casal 01</span></div>
+        <div class="foto-galeria"><img src="imagens/casal-02.jpg" alt="Segunda foto do casal" onerror="this.parentElement.classList.add('sem-foto');this.style.display='none'"><span class="placeholder-foto">Foto do casal 02</span></div>
       </div>
     </section>
+    </section>
+    <section class="pagina secao secao-local" id="cerimonia" aria-labelledby="titulo-cerimonia">
+      <div class="foto-local"><img src="imagens/igreja.jpg" alt="Foto do local da cerimônia" onerror="this.parentElement.classList.add('sem-foto');this.style.display='none'"><span class="placeholder-foto">Foto da igreja<br>imagens/igreja.jpg</span></div>
+      <div class="detalhes-local"><span class="sobretitulo">O NOSSO SIM</span><h2 id="titulo-cerimonia">Cerimônia</h2><p>Será uma alegria ter você conosco no momento em que diremos “sim”!</p><dl><dt>Local</dt><dd>[Nome da igreja]</dd><dt>Data</dt><dd>[Dia/mês/ano]</dd><dt>Horário</dt><dd>[Horário da cerimônia]</dd><dt>Endereço</dt><dd>[Endereço completo da igreja]</dd></dl><p class="nota-local">Substitua o endereço e adicione o link real do Google Maps quando estiver definido.</p></div>
+    </section>
+    <section class="pagina secao secao-local invertida" id="festa" aria-labelledby="titulo-festa">
+      <div class="foto-local"><img src="imagens/festa.jpg" alt="Foto do local da festa" onerror="this.parentElement.classList.add('sem-foto');this.style.display='none'"><span class="placeholder-foto">Foto do espaço da festa<br>imagens/festa.jpg</span></div>
+      <div class="detalhes-local"><span class="sobretitulo">VAMOS CELEBRAR</span><h2 id="titulo-festa">Nossa festa</h2><p>Depois da cerimônia, esperamos você para celebrar conosco esse dia tão especial, com muita alegria e carinho.</p><dl><dt>Local</dt><dd>[Nome do espaço de festas]</dd><dt>Data</dt><dd>[Dia/mês/ano]</dd><dt>Horário</dt><dd>[Horário da recepção]</dd><dt>Endereço</dt><dd>[Endereço completo do espaço]</dd></dl><p class="nota-local">Adicione aqui as informações de estacionamento ou acesso, se necessário.</p></div>
+    </section>
 
-    <footer>
-      Confirmação de presença •
-      <a href="admin.html">Área administrativa</a>
-    </footer>
-
+    <section class="pagina" id="presenca" aria-label="Confirmação de presença">
+      <div class="shell narrow area-presenca">
+        <header class="hero compact">
+          <div class="eyebrow">NOSSO DIA ESPECIAL</div>
+          <div class="heart">♥</div>
+          <h1>Confirmação de presença</h1>
+          <p>Será uma alegria celebrar com vocês!</p>
+        </header>
+        <div class="panel" id="app">
+          <p id="message" role="status">Carregando convite...</p>
+          <div id="family" hidden>
+            <h2 id="familyName"></h2>
+            <p id="deadlineNotice">Selecione as pessoas que estarão presentes:</p>
+            <div id="contadorPresenca" class="contador-presenca" hidden>
+              <h3>Tempo restante para confirmar presença</h3>
+              <div class="contador-numeros">
+                <div><strong id="dias">00</strong><span>Dias</span></div>
+                <div><strong id="horas">00</strong><span>Horas</span></div>
+                <div><strong id="minutos">00</strong><span>Minutos</span></div>
+                <div><strong id="segundos">00</strong><span>Segundos</span></div>
+              </div>
+            </div>
+            <div class="aviso-prazo" id="avisoPrazo">
+              <h3>Prazo para confirmação</h3>
+              <p id="dataLimite">Consultando prazo...</p>
+              <p class="aviso-importante"><strong>ATENÇÃO!</strong> A confirmação de presença é obrigatória para acesso ao evento.</p>
+              <p>A entrada será permitida somente às pessoas que tiverem seus nomes confirmados na lista da portaria.</p>
+              <p>Devido ao número limitado de convidados, <strong>quem não confirmar sua presença dentro do prazo não poderá entrar no evento.</strong></p>
+            </div>
+            <form id="rsvpForm">
+              <div id="members"></div>
+              <div class="actions">
+                <button type="submit" id="confirmBtn">Confirmar selecionados</button>
+                <button type="button" id="declineBtn" class="outline">Ninguém poderá comparecer</button>
+              </div>
+            </form>
+            <p id="lastStatus" class="muted"></p>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
-
+  <footer class="rodape-site">Feito com amor ♥ <span>•</span> Nosso casamento</footer>
+  <script>
+    (() => {
+      const abas = [...document.querySelectorAll('.menu-casamento [data-tab]')];
+      const paginas = [...document.querySelectorAll('main > .pagina')];
+      function abrirAba(nome) {
+        if (!paginas.some(p => p.id === nome)) nome = 'inicio';
+        paginas.forEach(p => p.classList.toggle('ativa', p.id === nome));
+        abas.forEach(a => {
+          const ativa = a.dataset.tab === nome;
+          a.classList.toggle('ativo', ativa);
+          if (ativa) a.setAttribute('aria-current', 'page');
+          else a.removeAttribute('aria-current');
+        });
+        window.scrollTo(0, 0);
+      }
+      window.addEventListener('hashchange', () => abrirAba(location.hash.slice(1)));
+      abrirAba(location.hash.slice(1) || 'inicio');
+    })();
+  </script>
   <script type="module" src="guest.js"></script>
 </body>
-
 </html>

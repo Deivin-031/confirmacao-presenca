@@ -1,396 +1,51 @@
-
-:root {
-    font-family: system-ui, -apple-system, Segoe UI, sans-serif;
-    color: #424247;
-    background: #F7F2EC;
-}
-
-* {
-    box-sizing: border-box;
-}
-
-body {
-    margin: 0;
-}
-
-.shell {
-    max-width: 960px;
-    margin: auto;
-    padding: 28px 16px 60px;
-}
-
-.narrow {
-    max-width: 620px;
-}
-
-.hero {
-    text-align: center;
-    padding: 38px 12px 24px;
-}
-
-.hero.compact {
-    padding: 16px 0 20px;
-}
-
-.eyebrow {
-    letter-spacing: .2em;
-    font-size: 12px;
-    color: #793747;
-}
-
-.heart {
-    font-size: 44px;
-    color: #793747;
-    margin: 10px;
-}
-
-h1 {
-    font-family: Georgia, serif;
-    font-size: clamp(30px, 5vw, 44px);
-    font-weight: normal;
-    margin: 12px 0;
-    color: #793747;
-}
-
-h2 {
-    font-family: Georgia, serif;
-    font-weight: normal;
-    font-size: 26px;
-    margin: 0 0 18px;
-    color: #424247;
-}
-
-h3 {
-    margin: 0 0 8px;
-    color: #793747;
-}
-
-.hero p,
-.muted,
-footer {
-    color: #66636A;
-}
-
-.panel {
-    background: #FFFCF9;
-    border: 1px solid #EAD8D8;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 18px;
-    box-shadow: 0 8px 24px rgba(66, 66, 71, 0.08);
-}
-
-label {
-    display: block;
-    margin: 12px 0;
-    font-size: 14px;
-}
-
-input:not([type=checkbox]),
-textarea {
-    width: 100%;
-    padding: 12px;
-    border: 1px solid #D8C3C8;
-    border-radius: 8px;
-    font: inherit;
-    margin-top: 7px;
-    background: #FFFFFF;
-    color: #424247;
-}
-
-input:focus,
-textarea:focus {
-    outline: 2px solid #B98B97;
-    outline-offset: 1px;
-}
-
-/* BOTÕES MARSALA */
-
-button {
-    background: #793747;
-    border: 1px solid #793747;
-    color: #FFFFFF;
-    padding: 12px 16px;
-    border-radius: 8px;
-    cursor: pointer;
-    font: inherit;
-    transition: background .2s ease, transform .2s ease;
-}
-
-button:hover:not(:disabled) {
-    background: #602938;
-    border-color: #602938;
-}
-
-button:disabled {
-    opacity: .55;
-    cursor: not-allowed;
-}
-
-button.outline {
-    background: transparent;
-    color: #793747;
-    border-color: #793747;
-}
-
-button.outline:hover:not(:disabled) {
-    background: #F3E5E8;
-    border-color: #793747;
-}
-
-.danger {
-    border-color: #A54D5D !important;
-    color: #A54D5D !important;
-    background: transparent;
-}
-
-.danger:hover:not(:disabled) {
-    background: #F8E9EC !important;
-}
-
-/* AÇÕES E BARRA ADMINISTRATIVA */
-
-.actions,
-.toolbar {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 18px;
-}
-
-.toolbar {
-    justify-content: flex-end;
-    margin-bottom: 18px;
-}
-
-/* LISTA DE CONVIDADOS */
-
-.member {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    border: 1px solid #EAD8D8;
-    border-radius: 9px;
-    margin: 10px 0;
-    font-size: 16px;
-    background: #FFFCF9;
-    color: #424247;
-}
-
-.member input {
-    width: 19px;
-    height: 19px;
-    accent-color: #793747;
-}
-
-/* ESTATÍSTICAS DO ADMIN */
-
-.stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 12px;
-    margin-bottom: 18px;
-}
-
-.stat {
-    background: #FFFCF9;
-    border-radius: 12px;
-    padding: 16px;
-    border: 1px solid #EAD8D8;
-}
-
-.stat strong {
-    font-size: 27px;
-    display: block;
-    color: #793747;
-}
-
-.stat span {
-    font-size: 13px;
-    color: #66636A;
-}
-
-/* CARTÕES DAS FAMÍLIAS */
-
-.family-list {
-    display: grid;
-    gap: 12px;
-}
-
-.family-card {
-    padding: 16px;
-    border: 1px solid #EAD8D8;
-    border-radius: 10px;
-    background: #FFFCF9;
-}
-
-.family-card p {
-    line-height: 1.7;
-}
-
-/* STATUS DAS CONFIRMAÇÕES */
-
-.status {
-    display: inline-block;
-    font-size: 12px;
-    padding: 4px 10px;
-    border-radius: 20px;
-    background: #F0E8E9;
-    color: #424247;
-}
-
-.status.yes {
-    background: #E4F2E7;
-    color: #2C6841;
-}
-
-.status.no {
-    background: #F7E8E8;
-    color: #9B4545;
-}
-
-.status.pending {
-    background: #F7EFDC;
-    color: #826523;
-}
-
-/* RODAPÉ E LINKS */
-
-footer {
-    text-align: center;
-    font-size: 12px;
-    margin-top: 30px;
-    color: #66636A;
-}
-
-a {
-    color: #793747;
-}
-
-a:hover {
-    color: #602938;
-}
-
-/* MENSAGENS */
-
-#feedback,
-#message,
-#newLink {
-    overflow-wrap: anywhere;
-}
-
-#feedback:not(:empty) {
-    padding: 12px;
-    background: #F8EDF0;
-    border: 1px solid #EAD8D8;
-    border-radius: 8px;
-}
-
-/* AVISO DE PRAZO E ENTRADA NO EVENTO */
-
-.aviso-prazo {
-    margin: 24px 0;
-    padding: 22px;
-    background: #F7F2EC;
-    border: 1px solid #EAD8D8;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.aviso-prazo h3 {
-    font-family: Georgia, serif;
-    font-size: 23px;
-    color: #793747;
-}
-
-#dataLimite {
-    font-size: 19px;
-    font-weight: bold;
-    color: #793747;
-    margin: 15px 0;
-}
-
-.aviso-importante {
-    color: #793747;
-    font-weight: 600;
-}
-
-.aviso-prazo p {
-    line-height: 1.6;
-}
-
-/* CRONÔMETRO DE CONFIRMAÇÃO */
-
-.contador-presenca {
-    margin: 20px 0 25px;
-    padding: 22px;
-    background: #F7F2EC;
-    border: 1px solid #EAD8D8;
-    border-radius: 12px;
-    text-align: center;
-}
-
-.contador-presenca[hidden] {
-    display: none !important;
-}
-
-.contador-presenca:not([hidden]) {
-    display: block;
-}
-
-.contador-presenca h3 {
-    font-family: Georgia, serif;
-    color: #424247;
-    font-size: 22px;
-    margin-bottom: 18px;
-}
-
-.contador-numeros {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 10px;
-}
-
-.contador-numeros div {
-    background: #FFFCF9;
-    border: 1px solid #EAD8D8;
-    border-radius: 10px;
-    padding: 12px 5px;
-}
-
-.contador-numeros strong {
-    display: block;
-    font-size: 26px;
-    color: #793747;
-}
-
-.contador-numeros span {
-    display: block;
-    font-size: 12px;
-    color: #424247;
-}
-
-/* AJUSTES PARA CELULAR */
-
-@media (max-width: 420px) {
-    .contador-numeros {
-        gap: 5px;
-    }
-
-    .contador-numeros strong {
-        font-size: 20px;
-    }
-
-    .contador-numeros span {
-        font-size: 11px;
-    }
-
-    .contador-presenca {
-        padding: 16px 10px;
-    }
-
-    .aviso-prazo {
-        padding: 16px;
-    }
-}
+/* Estilos exclusivos da nova página inicial. Preserva styles.css e o RSVP. */
+html { scroll-behavior: smooth; }
+body { background: #F7F2EC; color: #424247; }
+.site-header { max-width: 1120px; margin: auto; padding: 24px 18px 12px; text-align: center; }
+.site-brand { color: #793747; font-family: Georgia, serif; font-size: 24px; text-decoration: none; }
+.menu-casamento { display: flex; justify-content: center; align-items: center; gap: 18px; flex-wrap: wrap; width: 100%; margin: 20px auto 8px; }
+.menu-casamento a { display: inline-flex; align-items: center; justify-content: center; padding: 9px 16px; border-radius: 25px; background: #FFFCF9; color: #793747; border: 1px solid #EAD8D8; text-decoration: none; font-size: 13px; font-weight: 600; }
+.menu-casamento a:hover, .menu-casamento a.ativo { background: #793747; color: white; border-color: #793747; }
+main { max-width: 1120px; margin: auto; padding: 8px 18px 30px; }
+.abertura { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 36px; padding: 35px 0 60px; }
+.abertura-conteudo { text-align: center; padding: 20px 6px; }
+.sobretitulo { color: #793747; font-size: 11px; font-weight: 700; letter-spacing: .18em; }
+h1,h2 { color: #793747; font-family: Georgia, serif; font-weight: normal; }
+h1 { font-size: clamp(38px, 6vw, 62px); line-height: 1.1; margin: 16px 0; }
+h2 { font-size: clamp(30px, 4vw, 42px); margin: 12px 0 18px; }
+p { line-height: 1.8; }
+.subtitulo { font-family: Georgia, serif; font-size: 23px; color: #424247; }
+.subtitulo span { color: #793747; }
+.data-destaque { color: #793747; font-weight: 700; }
+.botao-marsala { display: inline-block; margin-top: 12px; background: #793747; color: #fff; border-radius: 25px; padding: 13px 24px; text-decoration: none; font-weight: 600; }
+.botao-marsala:hover { background: #602938; color: #fff; }
+.foto-principal,.foto-galeria,.foto-local { position: relative; overflow: hidden; background: #EAD8D8; border-radius: 16px; border: 1px solid #E3C9CF; }
+.foto-principal { aspect-ratio: 4/5; }
+.foto-galeria { aspect-ratio: 4/5; }
+.foto-local { aspect-ratio: 5/4; }
+.foto-principal img,.foto-galeria img,.foto-local img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.placeholder-foto { display: none; position: absolute; inset: 0; padding: 20px; align-items: center; justify-content: center; text-align: center; color: #793747; line-height: 1.8; overflow-wrap: anywhere; }
+.sem-foto .placeholder-foto { display: flex; flex-direction: column; }
+.secao { padding: 60px 0; scroll-margin-top: 20px; }
+.historia { text-align: center; max-width: 780px; margin: auto; }
+.galeria { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 28px; }
+.secao-local { display: grid; grid-template-columns: 1fr 1fr; gap: 42px; align-items: center; border-top: 1px solid #EAD8D8; }
+.secao-local.invertida .foto-local { order: 2; }
+.detalhes-local { padding: 10px; }
+.detalhes-local dl { display: grid; grid-template-columns: 90px 1fr; gap: 12px; margin-top: 24px; }
+.detalhes-local dt { font-weight: 700; color: #793747; }
+.detalhes-local dd { margin: 0; overflow-wrap: anywhere; }
+.nota-local { color: #66636A; font-size: 13px; }
+.convite-final { text-align: center; background: #FFFCF9; border: 1px solid #EAD8D8; border-radius: 18px; padding: 48px 20px; margin-top: 35px; }
+.rodape-site { text-align: center; padding: 18px 12px 40px; color: #66636A; }
+.rodape-site span { padding: 0 8px; }
+@media (max-width: 700px) { .abertura,.secao-local { grid-template-columns: 1fr; gap: 22px; } .abertura { padding: 20px 0 35px; } .foto-principal { max-width: 480px; width: 100%; margin: auto; aspect-ratio: 4/4; } .secao { padding: 40px 0; } .secao-local.invertida .foto-local { order: 0; } }
+@media (max-width: 480px) { .menu-casamento { gap: 8px; } .menu-casamento a { padding: 8px 11px; font-size: 12px; } .site-brand { font-size: 22px; } .galeria { gap: 10px; } .detalhes-local dl { grid-template-columns: 74px 1fr; } }
+
+/* Navegação por abas: somente a página selecionada fica visível */
+main > .pagina { display: none !important; }
+main > .pagina.ativa { display: block !important; }
+main > .pagina.secao-local.ativa { display: grid !important; }
+.pagina { min-height: 60vh; }
+.area-presenca { padding-top: 8px; }
+@media (max-width: 700px) { main > .pagina.secao-local.ativa { display: grid !important; grid-template-columns: 1fr; } }
