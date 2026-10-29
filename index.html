@@ -30,6 +30,7 @@
       <a href="#cerimonia" data-tab="cerimonia">Cerimônia</a>
       <a href="#festa" data-tab="festa">Festa</a>
       <a href="#presenca" data-tab="presenca">Presença</a>
+      <a href="#presentes" data-tab="presentes">Presentes</a>
     </nav>
   </header>
 
@@ -60,9 +61,7 @@
             02 de outubro de 2027
           </p>
 
-          <a class="botao-marsala" href="#presenca">
-            Confirmar presença
-          </a>
+
         </div>
 
         <div class="foto-principal">
@@ -144,7 +143,7 @@
           <dd>02/10/27</dd>
 
           <dt>Horário</dt>
-          <dd>15:30</dd>
+          <dd>16:00</dd>
 
           <dt>Endereço</dt>
           <dd>
@@ -299,6 +298,15 @@
         </div>
       </div>
     </section>
+    <!-- LISTA DE PRESENTES: ABA DEPOIS DA PRESENÇA -->
+    <section class="pagina secao secao-presentes" id="presentes">
+      <span class="sobretitulo">UM CARINHO ESPECIAL</span>
+      <h2>Nossa lista de presentes</h2>
+      <p>Sua presença é o nosso maior presente! Mas, se desejar nos presentear,
+      preparamos uma lista virtual com muito carinho. Os presentes são simbólicos:
+      recebemos o valor para construir nosso novo lar.</p>
+      <a class="botao-marsala" id="abrirPresentes" href="presentes.html">Ver lista de presentes</a>
+    </section>
   </main>
 
   <footer class="rodape-site">
@@ -405,6 +413,14 @@
     })();
   </script>
 
+  <script>
+    // Mantém o código individual no link para a lista.
+    const linkPresentes = document.getElementById('abrirPresentes');
+    const codigo = new URLSearchParams(location.search).get('c');
+    if (codigo && /^[A-Za-z0-9]{8}$/.test(codigo)) {
+      linkPresentes.href = 'presentes.html?c=' + encodeURIComponent(codigo);
+    }
+  </script>
   <!-- FIREBASE E CONFIRMAÇÃO -->
   <script type="module" src="guest.js"></script>
 </body>

@@ -481,3 +481,6 @@ body.acesso-liberado > #telaAcesso {
         animation: none;
     }
 }
+
+.secao-presentes { text-align:center; max-width:750px; margin:20px auto 70px; padding:60px 22px; }
+.secao-presentes p { line-height:1.85; margin-bottom:30px; }
