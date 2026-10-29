@@ -661,7 +661,27 @@ async function refreshGiftAdmin() {
       const details = document.createElement('p');
       const statuses = { paid: 'Pago', pending: 'Pendente', rejected: 'Recusado', cancelled: 'Cancelado', refunded: 'Reembolsado', charged_back: 'Contestação' };
       details.textContent = `${statuses[order.status] || order.status} · ${order.created_at || ''} · Pagamento: ${order.mp_payment_id || '—'}`;
-      card.append(title, details); ordersList.append(card);
+      const itemsBox = document.createElement('div');
+      itemsBox.className = 'order-items';
+      const itemsHeading = document.createElement('strong');
+      itemsHeading.textContent = 'Presentes escolhidos:';
+      itemsBox.append(itemsHeading);
+      if (Array.isArray(order.items) && order.items.length) {
+        const itemsList = document.createElement('ul');
+        for (const item of order.items) {
+          const li = document.createElement('li');
+          const quantity = Number(item.quantity) || 0;
+          const unit = Number(item.unit_price_cents) || 0;
+          li.textContent = `${quantity}× ${item.name} — ${reais(quantity * unit)}`;
+          itemsList.append(li);
+        }
+        itemsBox.append(itemsList);
+      } else {
+        const empty = document.createElement('p');
+        empty.textContent = 'Nenhum item encontrado para este pedido.';
+        itemsBox.append(empty);
+      }
+      card.append(title, details, itemsBox); ordersList.append(card);
     }
     if (!(o.orders || []).length) ordersList.textContent = 'Nenhum pedido registrado.';
     feedback('Presentes e pedidos atualizados.');
