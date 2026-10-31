@@ -495,3 +495,38 @@ body.acesso-liberado > #telaAcesso {
 .navegacao-paginas a{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:7px 14px;border:1px solid #b77c7d;border-radius:999px;background:transparent;color:#793747;text-decoration:none;font-size:13px;font-weight:600;line-height:1.2}
 .navegacao-paginas a.proximo{background:#793747;color:white}
 .navegacao-paginas a:hover,.navegacao-paginas a:focus-visible{outline:2px solid #b77c7d;outline-offset:2px}
+
+/* Botões de navegação: um em cada extremidade da página */
+main .navegacao-paginas {
+  display: flex !important;
+  width: 100%;
+  box-sizing: border-box;
+  justify-content: space-between !important;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 12px;
+  margin: 36px 0 20px;
+  padding: 0 12px;
+  grid-column: 1 / -1;
+}
+main .navegacao-paginas a {
+  display: inline-flex !important;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 7px 14px;
+  border: 1px solid #b77c7d;
+  border-radius: 999px;
+  background: #fffaf7;
+  color: #793747;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+main .navegacao-paginas a.proximo {
+  margin-left: auto;
+  background: #793747;
+  color: #fff;
+}

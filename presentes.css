@@ -93,3 +93,21 @@
 .navegacao-paginas{display:flex;justify-content:center;gap:12px;margin:28px auto 24px;padding:0 12px 80px}
 .navegacao-paginas a{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:7px 14px;border:1px solid #b77c7d;border-radius:999px;color:#793747;text-decoration:none;font-size:13px;font-weight:600}
 .navegacao-paginas a:hover,.navegacao-paginas a:focus-visible{outline:2px solid #b77c7d;outline-offset:2px}
+
+/* Botão Anterior alinhado à esquerda no final da lista */
+nav.navegacao-paginas {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+nav.navegacao-paginas a {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: #fffaf7;
+}
