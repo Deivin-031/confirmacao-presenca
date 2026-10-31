@@ -530,3 +530,6 @@ main .navegacao-paginas a.proximo {
   background: #793747;
   color: #fff;
 }
+
+/* Icones oficiais ilustrados nos botoes de localizacao */
+.links-local .icone-gps{width:23px;height:23px;object-fit:contain;flex:none;margin-right:7px;vertical-align:middle;border-radius:4px}
