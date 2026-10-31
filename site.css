@@ -577,3 +577,12 @@ main > #presenca::after, main > #presentes::after {background-image:url("imagens
  main > #cerimonia::before,main > #festa::before,main > #presenca::before,main > #presentes::before {width:100px;height:100px;right:-12px;top:-8px;opacity:.22}
  main > #cerimonia::after,main > #festa::after,main > #presenca::after,main > #presentes::after {width:90px;height:90px;left:-10px;bottom:8px;opacity:.18}
 }
+
+.nomes-noivos .e-comercial{
+   display: block;
+   font-family: Geórgia, serif;
+   font-size: 20px;
+   font-style: italic;
+   color: #b77c7d;
+   line-height: 1;
+}
