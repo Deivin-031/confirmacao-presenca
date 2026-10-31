@@ -38,3 +38,53 @@
   .presente .ilustracao img{height:92px}
   .valores-contribuicao{gap:6px}
 }
+
+/* Cartoes uniformes no catalogo: titulos e descricoes longas nao deslocam preco e botao */
+.catalogo > .presente:not(.contribuicao-card){
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  height:100%;
+}
+.catalogo > .presente:not(.contribuicao-card) .ilustracao{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+.catalogo > .presente:not(.contribuicao-card) h3{
+  line-height:1.35;
+  min-height:2.7em;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  overflow:hidden;
+  overflow-wrap:anywhere;
+}
+.catalogo > .presente:not(.contribuicao-card) p{
+  line-height:1.45;
+  height:2.9em;
+  min-height:2.9em;
+  display:-webkit-box;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  overflow:hidden;
+  overflow-wrap:anywhere;
+}
+.catalogo > .presente:not(.contribuicao-card) strong{
+  margin-top:auto;
+}
+.catalogo > .presente:not(.contribuicao-card) > button{
+  flex-shrink:0;
+}
+@media(max-width:760px){
+  .catalogo > .presente:not(.contribuicao-card) .ilustracao{height:122px}
+  .catalogo > .presente:not(.contribuicao-card) h3{font-size:15px}
+  .catalogo > .presente:not(.contribuicao-card) p{font-size:12px}
+}
+@media(max-width:460px){
+  .catalogo > .presente:not(.contribuicao-card) .ilustracao{height:108px}
+}
