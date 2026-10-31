@@ -484,3 +484,8 @@ body.acesso-liberado > #telaAcesso {
 
 .secao-presentes { text-align:center; max-width:750px; margin:20px auto 70px; padding:60px 22px; }
 .secao-presentes p { line-height:1.85; margin-bottom:30px; }
+
+/* Links de navegação para os locais */
+.links-local{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.links-local a{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:10px 16px;border:1px solid #b77c7d;border-radius:25px;background:#fffaf7;color:#793747;text-decoration:none;font-weight:700;font-size:14px;transition:background .2s}
+.links-local a:hover,.links-local a:focus-visible{background:#f2e2e3;outline-offset:2px}

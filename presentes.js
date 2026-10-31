@@ -1,4 +1,4 @@
-// Integração de TESTE: os preços são definidos exclusivamente no D1.
+// Os preços são definidos exclusivamente no D1.
 const API = 'https://casamento-pagamentos.davy-dado.workers.dev';
 const carrinho = {};
 const CONTRIB_ID = "contribuicao-livre-convidado";
@@ -50,6 +50,11 @@ function atualizar() {
   document.getElementById('quantidade').textContent=quantidade;
   document.getElementById('total').textContent=moeda(total);
   pagar.disabled=!quantidade;
+  const flutuante = document.getElementById('abrir-carrinho');
+  document.getElementById('flutuante-quantidade').textContent = '(' + quantidade + ')';
+  document.getElementById('flutuante-total').textContent = moeda(total);
+  flutuante.hidden = quantidade === 0;
+
 }
 function desenhar() {
   catalogo.replaceChildren();
@@ -131,7 +136,7 @@ pagar.addEventListener('click',async()=>{
   }
   if(!items.length)return;
   pagar.disabled=true;pagar.textContent='Preparando pagamento...';
-  mensagemStatus('Conectando ao Mercado Pago (ambiente de teste)...');
+  mensagemStatus('Conectando ao Mercado Pago...');
   try {
     const r=await fetch(API+'/api/checkout',{
       method:'POST',
@@ -145,7 +150,16 @@ pagar.addEventListener('click',async()=>{
     location.assign(data.checkout_url);
   } catch(e) {
     mensagemStatus('Não foi possível iniciar o pagamento: '+e.message,true);
-    pagar.disabled=false;pagar.textContent='Ir para pagamento de teste';
+    pagar.disabled=false;pagar.textContent='Ir para pagamento';
   }
 });
 carregar();
+
+// Atalho para o carrinho no celular, sem alterar o checkout.
+const atalhoCarrinho = document.getElementById('abrir-carrinho');
+atalhoCarrinho.addEventListener('click', () => {
+  const painel = document.getElementById('painel-carrinho');
+  painel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const nome = document.getElementById('nome');
+  if (nome) setTimeout(() => nome.focus({preventScroll:true}), 450);
+});
