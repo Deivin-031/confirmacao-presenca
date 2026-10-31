@@ -111,3 +111,6 @@ nav.navegacao-paginas a {
   border-radius: 999px;
   background: #fffaf7;
 }
+
+/* Centralizar o retorno ao convite na lista de presentes */
+nav.navegacao-paginas { justify-content: center !important; }
