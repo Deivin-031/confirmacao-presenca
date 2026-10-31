@@ -620,6 +620,49 @@ function resetGiftForm() {
   $('giftFormTitle').textContent = 'Adicionar presente';
 }
 $('giftCancel').onclick = resetGiftForm;
+let cachedOrders = [];
+function renderAdminOrders() {
+  const ordersList = $('adminOrdersList');
+  ordersList.replaceChildren();
+  const showTests = $('showTestOrders').checked;
+  const visible = cachedOrders.filter(o => showTests || !Number(o.is_test));
+  $('ordersCount').textContent = `${cachedOrders.filter(o=>!Number(o.is_test)).length} oficiais · ${cachedOrders.filter(o=>Number(o.is_test)).length} testes arquivados`;
+  for (const order of visible) {
+    const card = document.createElement('article'); card.className = 'family-card';
+    const title = document.createElement('h3'); title.textContent = `${order.buyer_name} — ${reais(order.total_cents)}${Number(order.is_test) ? ' · TESTE' : ''}`;
+    const details = document.createElement('p');
+    const statuses = { paid: 'Pago', pending: 'Pendente', rejected: 'Recusado', cancelled: 'Cancelado', refunded: 'Reembolsado', charged_back: 'Contestação' };
+    details.textContent = `${statuses[order.status] || order.status} · ${order.created_at || ''} · Pagamento: ${order.mp_payment_id || '—'}`;
+    const itemsBox = document.createElement('div'); itemsBox.className = 'order-items';
+    const heading = document.createElement('strong'); heading.textContent = 'Presentes escolhidos:'; itemsBox.append(heading);
+    const ul = document.createElement('ul');
+    for (const item of order.items || []) {
+      const li = document.createElement('li'); li.textContent = `${item.quantity}× ${item.name} — ${reais(item.quantity * item.unit_price_cents)}`; ul.append(li);
+    }
+    if (!ul.children.length) { const p=document.createElement('p'); p.textContent='Nenhum item encontrado.'; itemsBox.append(p); } else itemsBox.append(ul);
+    const toggle = document.createElement('button'); toggle.type='button'; toggle.className='outline';
+    toggle.textContent = Number(order.is_test) ? 'Desmarcar teste (tornar oficial)' : 'Marcar como teste';
+    toggle.onclick = async () => {
+      const mark = !Number(order.is_test);
+      if (!confirm(mark ? 'Marcar este pedido como TESTE e ocultá-lo dos pedidos oficiais? O pagamento continuará registrado.' : 'Tornar este pedido OFICIAL novamente?')) return;
+      try { await adminRequest('/api/admin/orders/mark-test','POST',{order_id:order.id,is_test:mark}); await refreshGiftAdmin(); }
+      catch(e) { feedback('Não foi possível alterar: '+e.message); }
+    };
+    card.append(title,details,itemsBox,toggle);
+    if (Number(order.is_test) && order.status==='pending' && !order.mp_payment_id) {
+      const del=document.createElement('button'); del.type='button'; del.className='outline'; del.style.marginLeft='8px'; del.textContent='Excluir teste pendente';
+      del.onclick=async()=>{
+        const typed=prompt('ATENÇÃO: somente exclua se confirmou que este teste NÃO foi pago no Mercado Pago. Para excluir, digite EXCLUIR TESTE:');
+        if(typed!=='EXCLUIR TESTE') return;
+        try { await adminRequest('/api/admin/orders/delete-test','POST',{order_id:order.id,confirmation:typed}); await refreshGiftAdmin(); }
+        catch(e) { feedback('Não foi possível excluir: '+e.message); }
+      }; card.append(del);
+    }
+    ordersList.append(card);
+  }
+  if(!visible.length) ordersList.textContent='Nenhum pedido para exibir.';
+}
+$('showTestOrders').onchange = renderAdminOrders;
 async function refreshGiftAdmin() {
   try {
     const [g, o] = await Promise.all([
@@ -653,37 +696,8 @@ async function refreshGiftAdmin() {
       card.append(title, details, edit); list.append(card);
     }
     if (!adminGifts.length) list.textContent = 'Nenhum presente cadastrado.';
-    const ordersList = $('adminOrdersList');
-    ordersList.replaceChildren();
-    for (const order of o.orders || []) {
-      const card = document.createElement('article'); card.className = 'family-card';
-      const title = document.createElement('h3'); title.textContent = `${order.buyer_name} — ${reais(order.total_cents)}`;
-      const details = document.createElement('p');
-      const statuses = { paid: 'Pago', pending: 'Pendente', rejected: 'Recusado', cancelled: 'Cancelado', refunded: 'Reembolsado', charged_back: 'Contestação' };
-      details.textContent = `${statuses[order.status] || order.status} · ${order.created_at || ''} · Pagamento: ${order.mp_payment_id || '—'}`;
-      const itemsBox = document.createElement('div');
-      itemsBox.className = 'order-items';
-      const itemsHeading = document.createElement('strong');
-      itemsHeading.textContent = 'Presentes escolhidos:';
-      itemsBox.append(itemsHeading);
-      if (Array.isArray(order.items) && order.items.length) {
-        const itemsList = document.createElement('ul');
-        for (const item of order.items) {
-          const li = document.createElement('li');
-          const quantity = Number(item.quantity) || 0;
-          const unit = Number(item.unit_price_cents) || 0;
-          li.textContent = `${quantity}× ${item.name} — ${reais(quantity * unit)}`;
-          itemsList.append(li);
-        }
-        itemsBox.append(itemsList);
-      } else {
-        const empty = document.createElement('p');
-        empty.textContent = 'Nenhum item encontrado para este pedido.';
-        itemsBox.append(empty);
-      }
-      card.append(title, details, itemsBox); ordersList.append(card);
-    }
-    if (!(o.orders || []).length) ordersList.textContent = 'Nenhum pedido registrado.';
+    cachedOrders = o.orders || [];
+    renderAdminOrders();
     feedback('Presentes e pedidos atualizados.');
   } catch (e) { feedback('Não foi possível carregar presentes e pedidos: ' + e.message); console.error(e); }
 }

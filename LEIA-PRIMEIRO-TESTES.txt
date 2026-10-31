@@ -1,0 +1,13 @@
+ATUALIZACAO: IDENTIFICACAO DE PEDIDOS DE TESTE
+
+1. GitHub Pages: substitua admin.html e admin.js pelos arquivos deste ZIP (ou envie a pasta completa).
+2. Cloudflare Workers: copie o conteudo de worker-atualizado.js no Worker casamento-pagamentos e clique em Deploy.
+3. Nao altere secrets, variaveis, vinculo D1 ou Cron Trigger.
+4. Abra o painel, clique Presentes, e marque individualmente os pedidos de teste.
+5. A caixa "Mostrar pedidos marcados como teste" permite reve-los e desmarcar.
+6. Um teste PENDENTE, com mais de uma hora e sem pagamento vinculado no D1, pode ser excluido manualmente apos marcacao e confirmacao. ANTES, confira no Mercado Pago que nao foi pago.
+7. Pedidos PAGOS de teste nao sao apagados: sao ocultados da lista oficial e preservados no banco.
+8. Esta alteracao nao apaga os quatro testes antigos automaticamente. Marque-os e exclua cada um se forem pendentes, depois de verificar.
+9. A tabela order_test_flags sera criada automaticamente na primeira consulta administrativa.
+
+IMPORTANTE: o historico financeiro do Mercado Pago nao e alterado. A lista de pedidos da API continua limitada aos 300 mais recentes.
