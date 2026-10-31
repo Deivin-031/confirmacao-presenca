@@ -489,3 +489,9 @@ body.acesso-liberado > #telaAcesso {
 .links-local{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
 .links-local a{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:10px 16px;border:1px solid #b77c7d;border-radius:25px;background:#fffaf7;color:#793747;text-decoration:none;font-weight:700;font-size:14px;transition:background .2s}
 .links-local a:hover,.links-local a:focus-visible{background:#f2e2e3;outline-offset:2px}
+
+/* Navegacao discreta entre abas */
+.navegacao-paginas{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:36px auto 20px;padding:0 12px}
+.navegacao-paginas a{display:inline-flex;align-items:center;justify-content:center;min-height:34px;padding:7px 14px;border:1px solid #b77c7d;border-radius:999px;background:transparent;color:#793747;text-decoration:none;font-size:13px;font-weight:600;line-height:1.2}
+.navegacao-paginas a.proximo{background:#793747;color:white}
+.navegacao-paginas a:hover,.navegacao-paginas a:focus-visible{outline:2px solid #b77c7d;outline-offset:2px}
