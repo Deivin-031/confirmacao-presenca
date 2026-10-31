@@ -533,3 +533,27 @@ main .navegacao-paginas a.proximo {
 
 /* Icones oficiais ilustrados nos botoes de localizacao */
 .links-local .icone-gps{width:23px;height:23px;object-fit:contain;flex:none;margin-right:7px;vertical-align:middle;border-radius:4px}
+
+/* Correção: Cerimônia e Festa com a mesma disposição no desktop.
+   A navegação ocupa sempre a linha inferior inteira. */
+@media (min-width: 701px) {
+  main > .pagina.secao-local.ativa {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  main > .pagina.secao-local.ativa .foto-local,
+  main > .pagina.secao-local.invertida.ativa .foto-local {
+    order: 0;
+    grid-column: 1;
+    grid-row: 1;
+  }
+  main > .pagina.secao-local.ativa .detalhes-local {
+    order: 0;
+    grid-column: 2;
+    grid-row: 1;
+  }
+  main > .pagina.secao-local.ativa .navegacao-paginas {
+    order: 1;
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}
