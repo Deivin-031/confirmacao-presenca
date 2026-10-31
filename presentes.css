@@ -114,3 +114,8 @@ nav.navegacao-paginas a {
 
 /* Centralizar o retorno ao convite na lista de presentes */
 nav.navegacao-paginas { justify-content: center !important; }
+
+/* Aquarela apenas no cabecalho da lista de presentes */
+.hero{position:relative;isolation:isolate}
+.hero::before{content:"";position:absolute;z-index:-1;pointer-events:none;top:-18px;right:-65px;width:165px;height:165px;background:url("imagens/floral-superior.png") no-repeat center/contain;opacity:.32}
+@media(max-width:760px){.hero::before{right:-10px;width:100px;height:100px;opacity:.18}}

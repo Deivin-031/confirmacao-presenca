@@ -557,3 +557,23 @@ main .navegacao-paginas a.proximo {
     grid-row: 2;
   }
 }
+
+
+/* Aquarela floral discreta — somente decoracao, sem interferir nos cliques */
+main > .pagina { position:relative; isolation:isolate; }
+main > .pagina::before, main > .pagina::after {
+ content:""; position:absolute; z-index:-1; pointer-events:none;
+ background-repeat:no-repeat; background-size:contain; opacity:.62;
+}
+main > #inicio::before {background-image:url("imagens/floral-superior.png"); width:clamp(170px,28vw,330px);height:270px;top:-42px;right:-55px;opacity:.76}
+main > #inicio::after {background-image:url("imagens/floral-inferior.png");width:clamp(180px,32vw,360px);height:340px;bottom:12px;left:-65px;opacity:.68}
+main > #cerimonia::before, main > #festa::before {background-image:url("imagens/floral-superior.png");width:180px;height:170px;top:-40px;right:-35px;opacity:.36}
+main > #cerimonia::after, main > #festa::after {background-image:url("imagens/floral-inferior.png");width:155px;height:155px;bottom:8px;left:-38px;opacity:.29}
+main > #presenca::before, main > #presentes::before {background-image:url("imagens/floral-superior.png");width:165px;height:155px;top:-30px;right:-30px;opacity:.34}
+main > #presenca::after, main > #presentes::after {background-image:url("imagens/floral-inferior.png");width:145px;height:145px;bottom:0;left:-30px;opacity:.25}
+@media(max-width:700px){
+ main > #inicio::before {width:130px;height:130px;right:-15px;top:-5px;opacity:.35}
+ main > #inicio::after {width:145px;height:145px;left:-16px;bottom:12px;opacity:.30}
+ main > #cerimonia::before,main > #festa::before,main > #presenca::before,main > #presentes::before {width:100px;height:100px;right:-12px;top:-8px;opacity:.22}
+ main > #cerimonia::after,main > #festa::after,main > #presenca::after,main > #presentes::after {width:90px;height:90px;left:-10px;bottom:8px;opacity:.18}
+}
