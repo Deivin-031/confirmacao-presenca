@@ -1,6 +1,6 @@
 // Apenas os arquivos visuais do painel sao armazenados. Dados e APIs nunca sao interceptados.
-const CACHE = 'casamento-admin-shell-v1';
-const ASSETS = ['./admin.html','./styles.css','./admin-app.css','./admin-app.js','./admin-icon-192.png','./admin-icon-512.png'];
+const CACHE = 'casamento-admin-shell-v2';
+const ASSETS = ['./admin.html','./styles.css','./admin-app.css','./admin-app.js','./admin-casal-192.png','./admin-casal-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
 });
