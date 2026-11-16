@@ -4,16 +4,23 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>Painel de confirmações</title>
+    <title>Casamento · Administração</title>
+    <meta name="theme-color" content="#793747">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Casamento Admin">
+    <link rel="manifest" href="admin-manifest.webmanifest">
+    <link rel="apple-touch-icon" href="admin-icon-192.png">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin-app.css">
 </head>
 
 <body>
     <main class="shell">
         <header class="hero compact">
             <div class="eyebrow">PAINEL DO ORGANIZADOR</div>
-            <h1>Lista de convidados</h1>
-            <p>Gerencie os convites por família.</p>
+            <h1>Nosso casamento</h1>
+            <p>Gerencie convidados, presentes e confirmações.</p>
         </header>
         <section class="panel" id="loginSection">
             <h2>Entrar</h2>
@@ -22,7 +29,7 @@
                         autocomplete="current-password"></label><button>Entrar no painel</button></form>
         </section>
         <div id="dashboard" hidden>
-            <div class="toolbar"><button id="logout" class="outline">Sair</button><button id="export"
+            <div class="toolbar"><button id="installAdminApp" type="button" class="outline" hidden>Instalar aplicativo</button><button id="logout" class="outline">Sair</button><button id="export"
                     class="outline">Exportar CSV</button></div>
             <nav class="admin-tabs" aria-label="Áreas do painel">
                 <button type="button" id="tabGuests" class="admin-tab selected">Confirmações</button>
@@ -92,6 +99,7 @@
         </dialog>
     </main>
     <script type="module" src="admin.js"></script>
+    <script src="admin-app.js" defer></script>
 </body>
 
 </html>
